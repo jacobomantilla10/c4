@@ -5,19 +5,27 @@ import "fmt"
 func main() {
 	board := makeBoard()
 	board.DrawBoard()
+	turn := 2
 
+	// Add turns by adding players
 	isOver := false
 	for !isOver {
-		fmt.Printf("\033[2K\rEnter column: ")
+		if turn == 2 {
+			turn = 1
+		} else {
+			turn = 2
+		}
+		// start a players turn and depending on whose turn it is paint different symbols on the screen
+		fmt.Printf("\033[2K\rEnter column player %d: ", turn)
 		var col int
 		fmt.Scanln(&col)
 		// Insert checker into col
-		err := board.InsertIntoCol(col - 1)
+		err := board.InsertIntoCol(col-1, turn)
 		for err != nil {
 			fmt.Print("\033[1A\033[2K")
-			fmt.Printf("\rInvalid insert... Enter column: ")
+			fmt.Printf("\rInvalid insert... Enter column player %d: ", turn)
 			fmt.Scanln(&col)
-			err = board.InsertIntoCol(col - 1)
+			err = board.InsertIntoCol(col-1, turn)
 		}
 		isWin := board.IsWin()
 		isDraw := board.IsDrawn()
@@ -25,7 +33,7 @@ func main() {
 		fmt.Print("\033[15A")
 		board.DrawBoard()
 	}
-	fmt.Println("\033[2K\rGame is over")
+	fmt.Printf("\033[2K\rGame is over. Player %d wins!\n", turn)
 }
 
 type Board struct {
@@ -46,14 +54,14 @@ func (b *Board) Set(x, y, new int) {
 	b.data[x][y] = new
 }
 
-func (b *Board) InsertIntoCol(y int) error {
+func (b *Board) InsertIntoCol(y, checker int) error {
 	if y > len(b.data) || y < 0 {
 		return fmt.Errorf("invalid insert")
 	}
 
 	for x := len(b.data) - 1; x >= 0; x-- {
 		if b.data[x][y] == 0 {
-			b.Set(x, y, 1)
+			b.Set(x, y, checker)
 			return nil
 		}
 	}
