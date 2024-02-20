@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	board := makeBoard(7, 6)
+	board := makeBoard()
 	board.DrawBoard()
 
 	isOver := false
@@ -11,6 +11,7 @@ func main() {
 		fmt.Printf("\033[2K\rEnter column: ")
 		var col int
 		fmt.Scanln(&col)
+		// Insert checker into col
 		err := board.InsertIntoCol(col - 1)
 		for err != nil {
 			fmt.Print("\033[1A\033[2K")
@@ -18,18 +19,13 @@ func main() {
 			fmt.Scanln(&col)
 			err = board.InsertIntoCol(col - 1)
 		}
-		// TODO Don't need to go all the way up to home... Just the next line below where the program was run from
+		isWin := board.IsWin()
+		isDraw := board.IsDrawn()
+		isOver = isWin || isDraw
 		fmt.Print("\033[15A")
 		board.DrawBoard()
 	}
-	// Loop until game is over
-
-	// Drop token in correct place using Set
-	// Draw board again using drawboard and updated board
-	// Check to see if that particular token won the game and update isOver var
-	// If game isn't over loop again
-	// If game is over break out of loop and let user know that someone already won
-	// Consider also that game can end in a draw if there are a no more legal moves
+	fmt.Println("\033[2K\rGame is over")
 }
 
 type Board struct {
@@ -37,9 +33,9 @@ type Board struct {
 	data [6][7]int
 }
 
-func makeBoard(w, h int) Board {
+func makeBoard() Board {
 	arr := [6][7]int{}
-	return Board{w, h, arr}
+	return Board{6, 7, arr}
 }
 
 func (b *Board) At(x, y int) int {
@@ -51,10 +47,6 @@ func (b *Board) Set(x, y, new int) {
 }
 
 func (b *Board) InsertIntoCol(y int) error {
-	// need to check to see if there already is a symbol in that spot
-	// if there is then you need to go to the next spot
-	// if there isn't then you can insert it into that spot
-	// need to loop through the rows backwards and only check the c position
 	if y > len(b.data) || y < 0 {
 		return fmt.Errorf("invalid insert")
 	}
@@ -78,4 +70,60 @@ func (b *Board) DrawBoard() {
 		fmt.Printf("|\n")
 	}
 	fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
+}
+
+func (b *Board) IsWin() bool {
+	for x := len(b.data) - 1; x >= 0; x-- {
+		// C is the index of the first occurrence of a non-empty checker in a horizontal
+		c := 0
+		for y := range b.data[x] {
+			// Check horizontal
+			if b.data[x][y] != b.data[x][c] || b.data[x][y] == 0 {
+				c = y
+			}
+			if y-c >= 3 {
+				return true
+			}
+			// Check vertical
+			h := x - 1
+			for h >= 0 && b.data[h][y] == b.data[x][y] && b.data[h][y] != 0 {
+				h--
+				if x-h == 4 {
+					return true
+				}
+			}
+			// Check left up diagonal
+			h = x - 1
+			w := y - 1
+			for h >= 0 && w >= 0 && b.data[h][w] == b.data[x][y] && b.data[h][w] != 0 {
+				h--
+				w--
+				if x-h == 4 {
+					return true
+				}
+			}
+			// Check up right diagonal
+			h = x - 1
+			w = y + 1
+			for h >= 0 && w < len(b.data[x]) && b.data[h][w] == b.data[x][y] && b.data[h][w] != 0 {
+				h--
+				w++
+				if x-h == 4 {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (b *Board) IsDrawn() bool {
+	for x := range b.data {
+		for y := range b.data[x] {
+			if b.data[x][y] == 0 {
+				return false
+			}
+		}
+	}
+	return true
 }
