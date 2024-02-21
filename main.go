@@ -5,31 +5,29 @@ import "fmt"
 func main() {
 	board := makeBoard()
 	board.DrawBoard()
-	turn := makeTurn()
-
-	// Add turns by adding players
+	player1 := makePlayer(1, 'X')
+	player2 := makePlayer(2, 'O')
+	currPlayer := player2
 	isWin := false
 	isDraw := false
 	isOver := isWin || isDraw
 	for !isOver {
-		if turn.playerId == 2 {
-			turn.playerId = 1
-			turn.character = 'X'
+		if currPlayer.playerId == 2 {
+			currPlayer = player1
 		} else {
-			turn.playerId = 2
-			turn.character = 'O'
+			currPlayer = player2
 		}
 		// start a players turn and depending on whose turn it is paint different symbols on the screen
-		fmt.Printf("\033[2K\rEnter column player %d: ", turn.playerId)
+		fmt.Printf("\033[2K\rEnter column player %d: ", currPlayer.playerId)
 		var col int
 		fmt.Scanln(&col)
 		// Insert checker into col
-		err := board.InsertIntoCol(col-1, turn.character)
+		err := board.InsertIntoCol(col-1, currPlayer.character)
 		for err != nil {
 			fmt.Print("\033[1A\033[2K")
-			fmt.Printf("\rInvalid insert... Enter column player %d: ", turn.playerId)
+			fmt.Printf("\rInvalid insert... Enter column player %d: ", currPlayer.playerId)
 			fmt.Scanln(&col)
-			err = board.InsertIntoCol(col-1, turn.character)
+			err = board.InsertIntoCol(col-1, currPlayer.character)
 		}
 		isWin = board.IsWin()
 		isDraw = board.IsDrawn()
@@ -38,19 +36,19 @@ func main() {
 		board.DrawBoard()
 	}
 	if isWin {
-		fmt.Printf("\033[2K\rGame is over. Player %d wins!\n", turn.playerId)
+		fmt.Printf("\033[2K\rGame is over. Player %d wins!\n", currPlayer.playerId)
 	} else {
 		fmt.Printf("\033[2K\rGame is a draw.")
 	}
 }
 
-type Turn struct {
+type Player struct {
 	playerId  int
 	character rune
 }
 
-func makeTurn() Turn {
-	return Turn{2, 'O'}
+func makePlayer(id int, symbol rune) Player {
+	return Player{id, symbol}
 }
 
 type Board struct {
