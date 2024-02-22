@@ -1,62 +1,13 @@
-package main
+package connectfour
 
 import "fmt"
-
-func main() {
-	board := makeBoard()
-	board.DrawBoard()
-	player1 := makePlayer(1, 'X')
-	player2 := makePlayer(2, 'O')
-	currPlayer := player2
-	isWin := false
-	isDraw := false
-	isOver := isWin || isDraw
-	for !isOver {
-		if currPlayer.playerId == 2 {
-			currPlayer = player1
-		} else {
-			currPlayer = player2
-		}
-		// start a players turn and depending on whose turn it is paint different symbols on the screen
-		fmt.Printf("\033[2K\rEnter column player %d: ", currPlayer.playerId)
-		var col int
-		fmt.Scanln(&col)
-		// Insert checker into col
-		err := board.InsertIntoCol(col-1, currPlayer.character)
-		for err != nil {
-			fmt.Print("\033[1A\033[2K")
-			fmt.Printf("\rInvalid insert... Enter column player %d: ", currPlayer.playerId)
-			fmt.Scanln(&col)
-			err = board.InsertIntoCol(col-1, currPlayer.character)
-		}
-		isWin = board.IsWin()
-		isDraw = board.IsDrawn()
-		isOver = isWin || isDraw
-		fmt.Print("\033[15A")
-		board.DrawBoard()
-	}
-	if isWin {
-		fmt.Printf("\033[2K\rGame is over. Player %d wins!\n", currPlayer.playerId)
-	} else {
-		fmt.Printf("\033[2K\rGame is a draw.")
-	}
-}
-
-type Player struct {
-	playerId  int
-	character rune
-}
-
-func makePlayer(id int, symbol rune) Player {
-	return Player{id, symbol}
-}
 
 type Board struct {
 	w, h int
 	data [6][7]rune
 }
 
-func makeBoard() Board {
+func MakeBoard() Board {
 	arr := [6][7]rune{}
 	for i := range arr {
 		arr[i] = [7]rune{' ', ' ', ' ', ' ', ' ', ' ', ' '}
