@@ -24,16 +24,21 @@ func main() {
 		// start a players turn and depending on whose turn it is paint different symbols on the screen
 		fmt.Printf("\033[2K\rEnter column player %d: ", currPlayer.GetId())
 		var col int
-		fmt.Scanln(&col)
+		_, err := fmt.Scanln(&col)
+
 		// Insert checker into col
-		err := board.InsertIntoCol(col-1, currPlayer.GetChar())
-		for err != nil {
+		for err != nil || !board.CanPlay(col-1) {
 			fmt.Print("\033[1A\033[2K")
 			fmt.Printf("\rInvalid insert... Enter column player %d: ", currPlayer.GetId())
 			fmt.Scanln(&col)
-			err = board.InsertIntoCol(col-1, currPlayer.GetChar())
 		}
-		isWin = board.IsWin()
+
+		if board.IsWinningMove(col-1, currPlayer.GetChar()) {
+			isWin = true
+		}
+
+		board.Play(col-1, currPlayer.GetChar())
+
 		isDraw = board.IsDrawn()
 		isOver = isWin || isDraw
 		fmt.Print("\033[15A")

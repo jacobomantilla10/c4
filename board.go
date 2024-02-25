@@ -3,8 +3,9 @@ package connectfour
 import "fmt"
 
 type Board struct {
-	w, h int
-	data [6][7]rune
+	w, h     int
+	data     [6][7]rune
+	numMoves int
 }
 
 func MakeBoard() Board {
@@ -12,29 +13,22 @@ func MakeBoard() Board {
 	for i := range arr {
 		arr[i] = [7]rune{' ', ' ', ' ', ' ', ' ', ' ', ' '}
 	}
-	return Board{6, 7, arr}
+	return Board{6, 7, arr, 0}
 }
 
-func (b *Board) At(x, y int) rune {
-	return b.data[x][y]
+func (b *Board) CanPlay(y int) bool {
+	// TODO check that the index is within the valid range to avoid panic
+	return y < len(b.data) && y >= 0 && b.data[0][y] == 32
 }
 
-func (b *Board) Set(x, y int, new rune) {
-	b.data[x][y] = new
-}
-
-func (b *Board) InsertIntoCol(y int, checker rune) error {
-	if y > len(b.data) || y < 0 {
-		return fmt.Errorf("invalid insert")
-	}
-
+func (b *Board) Play(y int, checker rune) {
 	for x := len(b.data) - 1; x >= 0; x-- {
 		if b.data[x][y] == 32 {
-			b.Set(x, y, checker)
-			return nil
+			b.data[x][y] = checker
+			b.numMoves++
+			return
 		}
 	}
-	return fmt.Errorf("invalid insert")
 }
 
 func (b *Board) DrawBoard() {
@@ -49,51 +43,64 @@ func (b *Board) DrawBoard() {
 	fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
 }
 
-func (b *Board) IsWin() bool {
-	// Figure out how to check for empty runes
-	// What is the nil value for a rune?
-	for x := len(b.data) - 1; x >= 0; x-- {
-		// C is the index of the first occurrence of a non-empty checker in a horizontal
-		c := 0
-		for y := range b.data[x] {
-			// Check horizontal
-			if b.data[x][y] != b.data[x][c] || b.data[x][y] == 32 {
-				c = y
-			}
-			if y-c >= 3 {
-				return true
-			}
-			// Check vertical
-			h := x - 1
-			for h >= 0 && b.data[h][y] == b.data[x][y] && b.data[h][y] != 32 {
-				h--
-				if x-h == 4 {
-					return true
-				}
-			}
-			// Check left up diagonal
-			h = x - 1
-			w := y - 1
-			for h >= 0 && w >= 0 && b.data[h][w] == b.data[x][y] && b.data[h][w] != 32 {
-				h--
-				w--
-				if x-h == 4 {
-					return true
-				}
-			}
-			// Check up right diagonal
-			h = x - 1
-			w = y + 1
-			for h >= 0 && w < len(b.data[x]) && b.data[h][w] == b.data[x][y] && b.data[h][w] != 32 {
-				h--
-				w++
-				if x-h == 4 {
-					return true
-				}
-			}
-		}
+func (b *Board) IsWinningMove(y int, char rune) bool {
+	// First figure out the row it goes into
+	x := 0
+	for x < len(b.data) && b.data[x][y] == 32 {
+		x++
 	}
-	return false
+	x--
+
+	// x is now equal to our insert row
+	l, r := y-1, y+1
+	for l >= 0 && b.data[x][l] == char {
+		l--
+	}
+	for r < len(b.data[x]) && b.data[x][r] == char {
+		r++
+	}
+	if r-l > 4 {
+		return true
+	}
+
+	h := x + 1
+	for h < len(b.data) && b.data[x][y] == char {
+		h++
+	}
+	//fmt.Printf("h: %d, x: %d\n", h, x)
+	if h-x >= 4 {
+		return true
+	}
+
+	// need to check up and to the left
+	o, u := x-1, x+1
+	l, r = y-1, y+1
+
+	for u < len(b.data) && l >= 0 && b.data[u][l] == char {
+		u++
+		l--
+	}
+	for o <= 0 && r < len(b.data[x]) && b.data[o][r] == char {
+		o--
+		r++
+	}
+	if u-o > 4 {
+		return true
+	}
+
+	o, u = x-1, x+1
+	l, r = y-1, y+1
+
+	for u < len(b.data) && r < len(b.data[x]) && b.data[u][r] == char {
+		u++
+		r++
+	}
+	for o <= 0 && l >= 0 && b.data[o][l] == char {
+		o--
+		l--
+	}
+
+	return u-o > 4
 }
 
 func (b *Board) IsDrawn() bool {
