@@ -23,7 +23,7 @@ func GetBestMove(b connectfour.Board) int {
 		}
 
 		newBoard.Play(i, 'O')
-		branchScore := MiniMax(newBoard, 11, -1000, 1000, 'X')
+		branchScore := MiniMax(newBoard, 14, -1000, 1000, 'X')
 		if branchScore > bestScore {
 			bestMove = i
 			bestScore = branchScore

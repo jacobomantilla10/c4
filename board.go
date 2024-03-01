@@ -1,6 +1,8 @@
 package connectfour
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Board struct {
 	w, h     int
@@ -14,6 +16,29 @@ func MakeBoard() Board {
 		arr[i] = [7]rune{' ', ' ', ' ', ' ', ' ', ' ', ' '}
 	}
 	return Board{6, 7, arr, 0}
+}
+
+func MakeBoardWithMatrix(m [6][7]rune) Board {
+	return Board{6, 7, m, 0}
+}
+
+func MakeBoardFromString(s string) (Board, error) {
+	board := MakeBoard()
+	//play the moves as detailed in the string
+	checker := 'O'
+	for _, c := range s {
+		if checker == 'O' {
+			checker = 'X'
+		} else {
+			checker = 'O'
+		}
+		col := int(c - '0')
+		if !board.CanPlay(col - 1) {
+			return board, fmt.Errorf("inserting into column: ")
+		}
+		board.Play(col-1, checker)
+	}
+	return board, nil
 }
 
 func (b *Board) NumMoves() int {
