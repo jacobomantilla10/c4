@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	connectfour "github.com/jacobomantilla10/connect-four"
+	"github.com/jacobomantilla10/connect-four/solver"
 )
 
 func main() {
@@ -20,6 +21,18 @@ func main() {
 			currPlayer = player1
 		} else {
 			currPlayer = player2
+		}
+
+		if currPlayer.GetId() == 2 {
+			move := solver.GetBestMove(board)
+			isWin = board.IsWinningMove(move, 'O')
+			board.Play(move, 'O')
+			isDraw = board.IsDrawn()
+			isOver = isWin || isDraw
+			fmt.Print("\033[2K\r")
+			fmt.Print("\033[15A")
+			board.DrawBoard()
+			continue
 		}
 		// start a players turn and depending on whose turn it is paint different symbols on the screen
 		fmt.Printf("\033[2K\rEnter column player %d: ", currPlayer.GetId())

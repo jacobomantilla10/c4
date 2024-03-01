@@ -16,9 +16,13 @@ func MakeBoard() Board {
 	return Board{6, 7, arr, 0}
 }
 
+func (b *Board) NumMoves() int {
+	return b.numMoves
+}
+
 func (b *Board) CanPlay(y int) bool {
 	// TODO check that the index is within the valid range to avoid panic
-	return y < len(b.data) && y >= 0 && b.data[0][y] == 32
+	return y < len(b.data[0]) && y >= 0 && b.data[0][y] == 32
 }
 
 func (b *Board) Play(y int, checker rune) {
@@ -53,10 +57,10 @@ func (b *Board) IsWinningMove(y int, char rune) bool {
 
 	// x is now equal to our insert row
 	l, r := y-1, y+1
-	for l >= 0 && b.data[x][l] == char {
+	for l >= 0 && x >= 0 && b.data[x][l] == char {
 		l--
 	}
-	for r < len(b.data[x]) && b.data[x][r] == char {
+	for r < len(b.data[x]) && x >= 0 && b.data[x][r] == char {
 		r++
 	}
 	if r-l > 4 {
@@ -64,7 +68,7 @@ func (b *Board) IsWinningMove(y int, char rune) bool {
 	}
 
 	h := x + 1
-	for h < len(b.data) && b.data[x][y] == char {
+	for h < len(b.data) && b.data[h][y] == char {
 		h++
 	}
 	//fmt.Printf("h: %d, x: %d\n", h, x)
@@ -80,7 +84,7 @@ func (b *Board) IsWinningMove(y int, char rune) bool {
 		u++
 		l--
 	}
-	for o <= 0 && r < len(b.data[x]) && b.data[o][r] == char {
+	for o >= 0 && r < len(b.data[x]) && b.data[o][r] == char {
 		o--
 		r++
 	}
@@ -95,7 +99,7 @@ func (b *Board) IsWinningMove(y int, char rune) bool {
 		u++
 		r++
 	}
-	for o <= 0 && l >= 0 && b.data[o][l] == char {
+	for o >= 0 && l >= 0 && b.data[o][l] == char {
 		o--
 		l--
 	}
