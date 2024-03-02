@@ -35,14 +35,8 @@ func TestCanPlay(t *testing.T) {
 	}
 
 	board := MakeBoard()
-	checker := 'X'
 	for i := 0; i < 6; i++ {
-		if checker == 'X' {
-			checker = 'O'
-		} else {
-			checker = 'X'
-		}
-		board.Play(2, checker)
+		board.Play(2)
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -55,9 +49,29 @@ func TestCanPlay(t *testing.T) {
 }
 
 func TestIsWinningMove(t *testing.T) {
-	// how to test is winning move
-	// let's create a function that gives us the board that we want from a string
-	// then we can run a table test passing in those values as strings to check wether or not a move is a winning move
+	var tests = []struct {
+		name        string
+		col         int
+		boardString string
+		want        bool
+	}{
+		{"3 is a winning move", 3, "445566", true},
+		{"6 is a winning move", 6, "445533", true},
+		{"2 is not a winning move", 2, "4455", false},
+		{"3 is also winning move", 3, "444555542216", true},
+		{"3 is another winning move", 3, "444555542213", true},
+		{"3 is not a winning move", 3, "44455554221", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			board, _ := MakeBoardFromString(tt.boardString)
+			ans := board.IsWinningMove(tt.col - 1)
+			if ans != tt.want {
+				t.Errorf("got %t, want %t", ans, tt.want)
+			}
+		})
+	}
 }
 
 func TestMakeBoardFromString(t *testing.T) {

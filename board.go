@@ -36,7 +36,7 @@ func MakeBoardFromString(s string) (Board, error) {
 		if !board.CanPlay(col - 1) {
 			return board, fmt.Errorf("inserting into column: ")
 		}
-		board.Play(col-1, checker)
+		board.Play(col - 1)
 	}
 	return board, nil
 }
@@ -50,7 +50,11 @@ func (b *Board) CanPlay(y int) bool {
 	return y < len(b.data[0]) && y >= 0 && b.data[0][y] == 32
 }
 
-func (b *Board) Play(y int, checker rune) {
+func (b *Board) Play(y int) {
+	checker := 'O'
+	if b.numMoves%2 == 0 {
+		checker = 'X'
+	}
 	for x := len(b.data) - 1; x >= 0; x-- {
 		if b.data[x][y] == 32 {
 			b.data[x][y] = checker
@@ -72,7 +76,11 @@ func (b *Board) DrawBoard() {
 	fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
 }
 
-func (b *Board) IsWinningMove(y int, char rune) bool {
+func (b *Board) IsWinningMove(y int) bool {
+	checker := 'O'
+	if b.numMoves%2 == 0 {
+		checker = 'X'
+	}
 	// First figure out the row it goes into
 	x := 0
 	for x < len(b.data) && b.data[x][y] == 32 {
@@ -82,10 +90,10 @@ func (b *Board) IsWinningMove(y int, char rune) bool {
 
 	// x is now equal to our insert row
 	l, r := y-1, y+1
-	for l >= 0 && x >= 0 && b.data[x][l] == char {
+	for l >= 0 && x >= 0 && b.data[x][l] == checker {
 		l--
 	}
-	for r < len(b.data[x]) && x >= 0 && b.data[x][r] == char {
+	for r < len(b.data[x]) && x >= 0 && b.data[x][r] == checker {
 		r++
 	}
 	if r-l > 4 {
@@ -93,7 +101,7 @@ func (b *Board) IsWinningMove(y int, char rune) bool {
 	}
 
 	h := x + 1
-	for h < len(b.data) && b.data[h][y] == char {
+	for h < len(b.data) && b.data[h][y] == checker {
 		h++
 	}
 	//fmt.Printf("h: %d, x: %d\n", h, x)
@@ -105,11 +113,11 @@ func (b *Board) IsWinningMove(y int, char rune) bool {
 	o, u := x-1, x+1
 	l, r = y-1, y+1
 
-	for u < len(b.data) && l >= 0 && b.data[u][l] == char {
+	for u < len(b.data) && l >= 0 && b.data[u][l] == checker {
 		u++
 		l--
 	}
-	for o >= 0 && r < len(b.data[x]) && b.data[o][r] == char {
+	for o >= 0 && r < len(b.data[x]) && b.data[o][r] == checker {
 		o--
 		r++
 	}
@@ -120,11 +128,11 @@ func (b *Board) IsWinningMove(y int, char rune) bool {
 	o, u = x-1, x+1
 	l, r = y-1, y+1
 
-	for u < len(b.data) && r < len(b.data[x]) && b.data[u][r] == char {
+	for u < len(b.data) && r < len(b.data[x]) && b.data[u][r] == checker {
 		u++
 		r++
 	}
-	for o >= 0 && l >= 0 && b.data[o][l] == char {
+	for o >= 0 && l >= 0 && b.data[o][l] == checker {
 		o--
 		l--
 	}
