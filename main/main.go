@@ -25,8 +25,8 @@ func main() {
 
 		if currPlayer.GetId() == 2 {
 			move := solver.GetBestMove(board)
-			isWin = board.IsWinningMove(move, 'O')
-			board.Play(move, 'O')
+			isWin = board.IsWinningMove(move)
+			board.Play(move)
 			isDraw = board.IsDrawn()
 			isOver = isWin || isDraw
 			fmt.Print("\033[2K\r")
@@ -46,11 +46,11 @@ func main() {
 			fmt.Scanln(&col)
 		}
 
-		if board.IsWinningMove(col-1, currPlayer.GetChar()) {
+		if board.IsWinningMove(col - 1) {
 			isWin = true
 		}
 
-		board.Play(col-1, currPlayer.GetChar())
+		board.Play(col - 1)
 
 		isDraw = board.IsDrawn()
 		isOver = isWin || isDraw
