@@ -7,7 +7,7 @@ import (
 // TODO add function to emulate move from AI calling MiniMax
 func GetBestMove(b connectfour.Board) int {
 	bestMove := 0
-	bestScore := -1000
+	bestScore := 1000
 
 	for i := 0; i <= 6; i++ {
 		if b.CanPlay(i) && b.IsWinningMove(i) {
@@ -24,7 +24,7 @@ func GetBestMove(b connectfour.Board) int {
 
 		newBoard.Play(i)
 		branchScore := MiniMax(newBoard, 14, -1000, 1000, 1)
-		if branchScore > bestScore {
+		if branchScore < bestScore {
 			bestMove = i
 			bestScore = branchScore
 		}

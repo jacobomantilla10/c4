@@ -19,6 +19,7 @@ func MakeBoard() Board {
 }
 
 func MakeBoardWithMatrix(m [6][7]rune) Board {
+	// TODO if this is going to be correct then we need to get the right numMoves in there and not 0
 	return Board{6, 7, m, 0}
 }
 
@@ -46,7 +47,6 @@ func (b *Board) NumMoves() int {
 }
 
 func (b *Board) CanPlay(y int) bool {
-	// TODO check that the index is within the valid range to avoid panic
 	return y < len(b.data[0]) && y >= 0 && b.data[0][y] == 32
 }
 
