@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// TODO implement a column order array that arranges moves from the center to the outside and use that in your MiniMax
 type Board struct {
 	w, h     int
 	data     [6][7]rune
