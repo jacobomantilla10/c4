@@ -4,28 +4,29 @@ import (
 	connectfour "github.com/jacobomantilla10/connect-four"
 )
 
-// TODO add function to emulate move from AI calling MiniMax
+var moveOrder = [7]int{3, 2, 4, 1, 5, 0, 6} // Optimal move exploration order. We loop over this to explore optimal branches first.
+
 func GetBestMove(b connectfour.Board) int {
 	bestMove := 0
 	bestScore := 1000
 
-	for i := 0; i <= 6; i++ {
-		if b.CanPlay(i) && b.IsWinningMove(i) {
-			return i
+	for _, move := range moveOrder {
+		if b.CanPlay(move) && b.IsWinningMove(move) {
+			return move
 		}
 	}
 
-	for i := 0; i <= 6; i++ {
+	for _, move := range moveOrder {
 		newBoard := b
 
-		if !newBoard.CanPlay(i) {
+		if !newBoard.CanPlay(move) {
 			continue
 		}
 
-		newBoard.Play(i)
+		newBoard.Play(move)
 		branchScore := MiniMax(newBoard, 14, -1000, 1000, 1)
 		if branchScore < bestScore {
-			bestMove = i
+			bestMove = move
 			bestScore = branchScore
 		}
 	}
@@ -39,8 +40,8 @@ func MiniMax(b connectfour.Board, depth, alpha, beta, isMaximizingPlayer int) in
 	}
 
 	// check to see if there is any immediate win and if there is return the computed value from it as well as the column associated with it
-	for i := 0; i <= 6; i++ {
-		if b.CanPlay(i) && b.IsWinningMove(i) {
+	for _, move := range moveOrder {
+		if b.CanPlay(move) && b.IsWinningMove(move) {
 			return isMaximizingPlayer * ((7*6 + 1 - b.NumMoves()) / 2)
 		}
 	}
@@ -48,14 +49,14 @@ func MiniMax(b connectfour.Board, depth, alpha, beta, isMaximizingPlayer int) in
 	var bestScore int
 	if isMaximizingPlayer == 1 {
 		bestScore = -1000
-		for i := 0; i <= 6; i++ {
+		for _, move := range moveOrder {
 			newBoard := b
 
-			if !newBoard.CanPlay(i) {
+			if !newBoard.CanPlay(move) {
 				continue
 			}
 
-			newBoard.Play(i)
+			newBoard.Play(move)
 			branchScore := MiniMax(newBoard, depth-1, alpha, beta, -1)
 
 			if branchScore > bestScore {
@@ -72,14 +73,14 @@ func MiniMax(b connectfour.Board, depth, alpha, beta, isMaximizingPlayer int) in
 		}
 	} else {
 		bestScore = 1000
-		for i := 0; i <= 6; i++ {
+		for _, move := range moveOrder {
 			newBoard := b
 
-			if !newBoard.CanPlay(i) {
+			if !newBoard.CanPlay(move) {
 				continue
 			}
 
-			newBoard.Play(i)
+			newBoard.Play(move)
 			branchScore := MiniMax(newBoard, depth-1, alpha, beta, 1)
 
 			if branchScore < bestScore {
