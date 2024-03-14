@@ -7,19 +7,21 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	connectfour "github.com/jacobomantilla10/connect-four"
 )
 
-func TestMiniMax(t *testing.T) {
-	type test struct {
-		name  string
-		input connectfour.Board
-		want  int
-	}
+type test struct {
+	name  string
+	input connectfour.Board
+	want  int
+}
+
+func createTable(fn string) []test {
 	var tests []test
 
-	file, err := os.Open("testfiles/Test_L3_R1")
+	file, err := os.Open(fn)
 	if err != nil {
 		panic(err)
 	}
@@ -36,16 +38,111 @@ func TestMiniMax(t *testing.T) {
 		tests = append(tests, test{fmt.Sprintf("%s should be %d", boardString, want), board, want})
 	}
 
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	return tests
+}
+
+func TestEasyEasy(t *testing.T) {
+	tests := createTable("testfiles/Test_L3_R1")
+	var totalTime time.Duration
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ans := MiniMax(tt.input, 14, -1000, 1000, 1)
+			start := time.Now()
+			ans := MiniMax(tt.input, 27, -1000, 1000, 1)
+			end := time.Now()
+			totalTime += end.Sub(start)
 			if ans != tt.want {
 				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
 			}
 		})
 	}
+	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Microsecond), (totalTime / 1000).Round(time.Microsecond))
+}
 
-	if err := scanner.Err(); err != nil {
-		panic(err)
+func TestMediumEasy(t *testing.T) {
+	tests := createTable("testfiles/Test_L2_R1")
+	var totalTime time.Duration
+	for i, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			start := time.Now()
+			ans := MiniMax(tt.input, 27, -1000, 1000, 1)
+			end := time.Now()
+			totalTime += end.Sub(start)
+			if ans != tt.want {
+				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+			}
+		})
 	}
+	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Millisecond), (totalTime / 1000).Round(time.Millisecond))
+}
+
+func TestMediumMedium(t *testing.T) {
+	tests := createTable("testfiles/Test_L2_R2")
+	var totalTime time.Duration
+	for i, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			start := time.Now()
+			ans := MiniMax(tt.input, 27, -1000, 1000, 1)
+			end := time.Now()
+			totalTime += end.Sub(start)
+			if ans != tt.want {
+				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+			}
+		})
+	}
+	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
+}
+
+func TestHardEasy(t *testing.T) {
+	tests := createTable("testfiles/Test_L1_R1")
+	var totalTime time.Duration
+	for i, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			start := time.Now()
+			ans := MiniMax(tt.input, 27, -1000, 1000, 1)
+			end := time.Now()
+			totalTime += end.Sub(start)
+			if ans != tt.want {
+				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+			}
+		})
+	}
+	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
+}
+
+func TestHardMedium(t *testing.T) {
+	tests := createTable("testfiles/Test_L1_R2")
+	var totalTime time.Duration
+	for i, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			start := time.Now()
+			ans := MiniMax(tt.input, 27, -1000, 1000, 1)
+			end := time.Now()
+			totalTime += end.Sub(start)
+			if ans != tt.want {
+				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+			}
+		})
+	}
+	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
+}
+
+func TestHardHard(t *testing.T) {
+	tests := createTable("testfiles/Test_L1_R3")
+	var totalTime time.Duration
+	for i, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			start := time.Now()
+			ans := MiniMax(tt.input, 27, -1000, 1000, 1)
+			end := time.Now()
+			totalTime += end.Sub(start)
+			if ans != tt.want {
+				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+			}
+		})
+	}
+	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
 }
