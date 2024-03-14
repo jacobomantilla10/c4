@@ -51,7 +51,7 @@ func (b *Board) CanPlay(y int) bool {
 	return y < len(b.data[0]) && y >= 0 && b.data[0][y] == 32
 }
 
-func (b *Board) Play(y int) {
+func (b *Board) Play(y int) int {
 	checker := 'O'
 	if b.numMoves%2 == 0 {
 		checker = 'X'
@@ -60,6 +60,17 @@ func (b *Board) Play(y int) {
 		if b.data[x][y] == 32 {
 			b.data[x][y] = checker
 			b.numMoves++
+			return x
+		}
+	}
+	return -1
+}
+
+func (b *Board) Unplay(y int) {
+	for x := len(b.data) - 1; x >= 0; x-- {
+		if b.data[x][y] != 32 {
+			b.data[x][y] = ' '
+			b.numMoves--
 			return
 		}
 	}
@@ -83,18 +94,13 @@ func (b *Board) IsWinningMove(y int) bool {
 		checker = 'X'
 	}
 	// First figure out the row it goes into
-	x := 0
-	for x < len(b.data) && b.data[x][y] == 32 {
-		x++
-	}
-	x--
+	x := b.Play(y)
 
-	// x is now equal to our insert row
 	l, r := y-1, y+1
-	for l >= 0 && x >= 0 && b.data[x][l] == checker {
+	for l >= 0 && b.data[x][l] == checker {
 		l--
 	}
-	for r < len(b.data[x]) && x >= 0 && b.data[x][r] == checker {
+	for r < len(b.data[x]) && b.data[x][r] == checker {
 		r++
 	}
 	if r-l > 4 {
@@ -105,7 +111,6 @@ func (b *Board) IsWinningMove(y int) bool {
 	for h < len(b.data) && b.data[h][y] == checker {
 		h++
 	}
-	//fmt.Printf("h: %d, x: %d\n", h, x)
 	if h-x >= 4 {
 		return true
 	}
@@ -138,6 +143,7 @@ func (b *Board) IsWinningMove(y int) bool {
 		l--
 	}
 
+	b.Unplay(y)
 	return u-o > 4
 }
 
