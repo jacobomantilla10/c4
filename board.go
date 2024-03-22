@@ -43,11 +43,11 @@ func (b *Board) CanPlay(y int) bool {
 }
 
 func (b *Board) top_mask(col int) uint64 {
-	return 1 << (b.h - 1) << ((col - 1) * (b.h + 1))
+	return 1 << (b.h - 1) << (col * (b.h + 1))
 }
 
 func (b *Board) bottom_mask(col int) uint64 {
-	return 1 << ((col - 1) * (b.h + 1))
+	return 1 << (col * (b.h + 1))
 }
 
 func (b *Board) Play(y int) {
@@ -57,32 +57,46 @@ func (b *Board) Play(y int) {
 }
 
 func (b *Board) DrawBoard() {
-	pos := b.position
-	mask := b.mask
-	currentPlayer, opponent := 'X', 'O'
+	// write algorithm to convert number to rune array used to render position
+	//posArr := []uint64{0, 0, 0, 0, 0, 0, 0} // need to map bit at (i, j) to (j, i)
+	currentPlayer, opponent := 'O', 'X'
 	if b.numMoves%2 == 1 {
 		currentPlayer, opponent = opponent, currentPlayer
 	}
-	fmt.Printf("\033[2K  1   2   3   4   5   6   7  \n")
-	for pos != 0 {
-		fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
-		i := 0
-		for i <= 7 {
+	posArr := [6][7]rune{
+		{' ', ' ', ' ', ' ', ' ', ' ', ' '},
+		{' ', ' ', ' ', ' ', ' ', ' ', ' '},
+		{' ', ' ', ' ', ' ', ' ', ' ', ' '},
+		{' ', ' ', ' ', ' ', ' ', ' ', ' '},
+		{' ', ' ', ' ', ' ', ' ', ' ', ' '},
+		{' ', ' ', ' ', ' ', ' ', ' ', ' '},
+	}
+	k := 0
+	for i := 5; i >= 0; i-- {
+		for j := 0; j < len(posArr[i]); j++ {
+			currPos := b.position >> k
+			currMask := b.mask >> k
 			var char rune
-			if mask&1 == 1 && pos&1 == 1 {
+			if (currMask>>(j*6))&1 == 1 && (currPos>>(j*6))&1 == 1 {
 				char = currentPlayer
-			} else if mask&1 == 1 && pos&1 == 0 {
+			} else if (currMask>>(j*6))&1 == 1 && (currPos>>(j*6))&1 == 0 {
 				char = opponent
 			} else {
 				char = ' '
 			}
-			fmt.Printf("| %c ", char)
-			fmt.Printf("|\n")
-			pos = (pos >> 1)
-			mask = (mask >> 1)
+			posArr[i][j] = char
+		}
+		k++
+	}
+	fmt.Printf("\033[2K  1   2   3   4   5   6   7  \n")
+	fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
+	for i := range posArr {
+		for j := range posArr[i] {
+			fmt.Printf("| %c ", posArr[i][j])
 		}
 		fmt.Printf("|\n")
 		fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
+		i++
 	}
 }
 
