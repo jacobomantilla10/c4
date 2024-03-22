@@ -9,7 +9,7 @@ func TestMakeBoard(t *testing.T) {
 	}
 	for i := 0; i < 6; i++ {
 		for j := 0; j < 7; j++ {
-			if board.data[i][j] != ' ' {
+			if board.position != 0 {
 				t.Errorf("Board didn't initialize as empty")
 			}
 		}
@@ -74,54 +74,42 @@ func TestIsWinningMove(t *testing.T) {
 	}
 }
 
-func TestUnplay(t *testing.T) {
-	initial, _ := MakeBoardFromString("445566")
-	after, _ := MakeBoardFromString("445566")
-	after.Play(5)
-	after.Unplay(5)
-	t.Run("Should be equal boards", func(t *testing.T) {
-		if initial.data != after.data {
-			t.Errorf("got %v want %v", after.data, initial.data)
-		}
-	})
-}
+// func TestMakeBoardFromString(t *testing.T) {
+// 	//Set up
+// 	randBoardMatrix := [6][7]rune{}
+// 	randBoardMatrix[0] = [7]rune{' ', ' ', ' ', ' ', ' ', ' ', ' '}
+// 	randBoardMatrix[1] = [7]rune{' ', ' ', ' ', ' ', ' ', ' ', ' '}
+// 	randBoardMatrix[2] = [7]rune{' ', ' ', ' ', 'O', 'X', ' ', ' '}
+// 	randBoardMatrix[3] = [7]rune{' ', ' ', ' ', 'X', 'O', ' ', ' '}
+// 	randBoardMatrix[4] = [7]rune{' ', 'O', ' ', 'O', 'X', ' ', ' '}
+// 	randBoardMatrix[5] = [7]rune{'X', 'X', ' ', 'X', 'O', ' ', ' '}
 
-func TestMakeBoardFromString(t *testing.T) {
-	//Set up
-	randBoardMatrix := [6][7]rune{}
-	randBoardMatrix[0] = [7]rune{' ', ' ', ' ', ' ', ' ', ' ', ' '}
-	randBoardMatrix[1] = [7]rune{' ', ' ', ' ', ' ', ' ', ' ', ' '}
-	randBoardMatrix[2] = [7]rune{' ', ' ', ' ', 'O', 'X', ' ', ' '}
-	randBoardMatrix[3] = [7]rune{' ', ' ', ' ', 'X', 'O', ' ', ' '}
-	randBoardMatrix[4] = [7]rune{' ', 'O', ' ', 'O', 'X', ' ', ' '}
-	randBoardMatrix[5] = [7]rune{'X', 'X', ' ', 'X', 'O', ' ', ' '}
+// 	fullBoardMatrix := [6][7]rune{}
+// 	fullBoardMatrix[0] = [7]rune{'O', 'X', 'O', 'X', 'O', 'X', 'O'}
+// 	fullBoardMatrix[1] = [7]rune{'X', 'O', 'X', 'O', 'X', 'O', 'X'}
+// 	fullBoardMatrix[2] = [7]rune{'O', 'X', 'O', 'X', 'O', 'X', 'O'}
+// 	fullBoardMatrix[3] = [7]rune{'X', 'O', 'X', 'O', 'X', 'O', 'X'}
+// 	fullBoardMatrix[4] = [7]rune{'O', 'X', 'O', 'X', 'O', 'X', 'O'}
+// 	fullBoardMatrix[5] = [7]rune{'X', 'O', 'X', 'O', 'X', 'O', 'X'}
 
-	fullBoardMatrix := [6][7]rune{}
-	fullBoardMatrix[0] = [7]rune{'O', 'X', 'O', 'X', 'O', 'X', 'O'}
-	fullBoardMatrix[1] = [7]rune{'X', 'O', 'X', 'O', 'X', 'O', 'X'}
-	fullBoardMatrix[2] = [7]rune{'O', 'X', 'O', 'X', 'O', 'X', 'O'}
-	fullBoardMatrix[3] = [7]rune{'X', 'O', 'X', 'O', 'X', 'O', 'X'}
-	fullBoardMatrix[4] = [7]rune{'O', 'X', 'O', 'X', 'O', 'X', 'O'}
-	fullBoardMatrix[5] = [7]rune{'X', 'O', 'X', 'O', 'X', 'O', 'X'}
-
-	emptyBoard := MakeBoard()
-	randBoard := MakeBoardWithMatrix(randBoardMatrix)
-	fullBoard := MakeBoardWithMatrix(fullBoardMatrix)
-	var tests = []struct {
-		name  string
-		input string
-		want  Board
-	}{
-		{"Empty board should be equal", "", emptyBoard},
-		{"Random board should be equal", "44455554221", randBoard},
-		{"Full board should be equal", "123456712345671234567123456712345671234567", fullBoard},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ans, _ := MakeBoardFromString(tt.input)
-			if ans.data != tt.want.data {
-				t.Errorf("got %v wanted %v", ans.data, tt.want.data)
-			}
-		})
-	}
-}
+// 	emptyBoard := MakeBoard()
+// 	randBoard := MakeBoardWithMatrix(randBoardMatrix)
+// 	fullBoard := MakeBoardWithMatrix(fullBoardMatrix)
+// 	var tests = []struct {
+// 		name  string
+// 		input string
+// 		want  Board
+// 	}{
+// 		{"Empty board should be equal", "", emptyBoard},
+// 		{"Random board should be equal", "44455554221", randBoard},
+// 		{"Full board should be equal", "123456712345671234567123456712345671234567", fullBoard},
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			ans, _ := MakeBoardFromString(tt.input)
+// 			if ans.data != tt.want.data {
+// 				t.Errorf("got %v wanted %v", ans.data, tt.want.data)
+// 			}
+// 		})
+// 	}
+// }

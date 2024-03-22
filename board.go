@@ -7,33 +7,24 @@ import (
 // TODO implement a column order array that arranges moves from the center to the outside and use that in your MiniMax
 type Board struct {
 	w, h     int
-	data     [6][7]rune
+	position uint64
+	mask     uint64
 	numMoves int
 }
 
 func MakeBoard() Board {
-	arr := [6][7]rune{}
-	for i := range arr {
-		arr[i] = [7]rune{' ', ' ', ' ', ' ', ' ', ' ', ' '}
-	}
-	return Board{6, 7, arr, 0}
+	return Board{7, 6, 0, 0, 0}
 }
 
-func MakeBoardWithMatrix(m [6][7]rune) Board {
-	// TODO if this is going to be correct then we need to get the right numMoves in there and not 0
-	return Board{6, 7, m, 0}
-}
+// func MakeBoardWithMatrix(m [6][7]rune) Board {
+// 	// TODO if this is going to be correct then we need to get the right numMoves in there and not 0
+// 	return Board{6, 7, m, 0}
+// }
 
 func MakeBoardFromString(s string) (Board, error) {
 	board := MakeBoard()
 	//play the moves as detailed in the string
-	checker := 'O'
 	for _, c := range s {
-		if checker == 'O' {
-			checker = 'X'
-		} else {
-			checker = 'O'
-		}
 		col := int(c - '0')
 		if !board.CanPlay(col - 1) {
 			return board, fmt.Errorf("inserting into column: ")
@@ -48,112 +39,58 @@ func (b *Board) NumMoves() int {
 }
 
 func (b *Board) CanPlay(y int) bool {
-	return y < len(b.data[0]) && y >= 0 && b.data[0][y] == 32
+	return b.position&b.top_mask(y) == 0
 }
 
-func (b *Board) Play(y int) int {
-	checker := 'O'
-	if b.numMoves%2 == 0 {
-		checker = 'X'
-	}
-	for x := len(b.data) - 1; x >= 0; x-- {
-		if b.data[x][y] == 32 {
-			b.data[x][y] = checker
-			b.numMoves++
-			return x
-		}
-	}
-	return -1
+func (b *Board) top_mask(col int) uint64 {
+	return 1 << (b.h - 1) << ((col - 1) * (b.h + 1))
 }
 
-func (b *Board) Unplay(y int) {
-	for x := 0; x < len(b.data); x++ {
-		if b.data[x][y] != 32 {
-			b.data[x][y] = ' '
-			b.numMoves--
-			return
-		}
-	}
+func (b *Board) bottom_mask(col int) uint64 {
+	return 1 << ((col - 1) * (b.h + 1))
+}
+
+func (b *Board) Play(y int) {
+	b.mask |= (b.mask + b.bottom_mask(y))
+	b.position ^= b.mask
+	b.numMoves++
 }
 
 func (b *Board) DrawBoard() {
+	pos := b.position
+	mask := b.mask
+	currentPlayer, opponent := 'X', 'O'
+	if b.numMoves%2 == 1 {
+		currentPlayer, opponent = opponent, currentPlayer
+	}
 	fmt.Printf("\033[2K  1   2   3   4   5   6   7  \n")
-	for i := range b.data {
+	for pos != 0 {
 		fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
-		for j := range b.data[i] {
-			fmt.Printf("| %c ", b.data[i][j])
+		i := 0
+		for i <= 7 {
+			var char rune
+			if mask&1 == 1 && pos&1 == 1 {
+				char = currentPlayer
+			} else if mask&1 == 1 && pos&1 == 0 {
+				char = opponent
+			} else {
+				char = ' '
+			}
+			fmt.Printf("| %c ", char)
+			fmt.Printf("|\n")
+			pos = (pos >> 1)
+			mask = (mask >> 1)
 		}
 		fmt.Printf("|\n")
+		fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
 	}
-	fmt.Printf("\033[2K+---+---+---+---+---+---+---+\n")
 }
 
 func (b *Board) IsWinningMove(y int) bool {
-	checker := 'O'
-	if b.numMoves%2 == 0 {
-		checker = 'X'
-	}
-	// First figure out the row it goes into
-	x := b.Play(y)
-	b.Unplay(y)
-
-	l, r := y-1, y+1
-	for l >= 0 && b.data[x][l] == checker {
-		l--
-	}
-	for r < len(b.data[x]) && b.data[x][r] == checker {
-		r++
-	}
-	if r-l > 4 {
-		return true
-	}
-
-	h := x + 1
-	for h < len(b.data) && b.data[h][y] == checker {
-		h++
-	}
-	if h-x >= 4 {
-		return true
-	}
-
-	// need to check up and to the left
-	o, u := x-1, x+1
-	l, r = y-1, y+1
-
-	for u < len(b.data) && l >= 0 && b.data[u][l] == checker {
-		u++
-		l--
-	}
-	for o >= 0 && r < len(b.data[x]) && b.data[o][r] == checker {
-		o--
-		r++
-	}
-	if u-o > 4 {
-		return true
-	}
-
-	o, u = x-1, x+1
-	l, r = y-1, y+1
-
-	for u < len(b.data) && r < len(b.data[x]) && b.data[u][r] == checker {
-		u++
-		r++
-	}
-	for o >= 0 && l >= 0 && b.data[o][l] == checker {
-		o--
-		l--
-	}
-
-	return u-o > 4
+	// need to add the move to the corresponding column and then do the computations on that mf
+	return false
 }
 
 func (b *Board) IsDrawn() bool {
-	for x := range b.data {
-		for y := range b.data[x] {
-			if b.data[x][y] == 32 {
-				return false
-			}
-		}
-	}
-	return true
+	return b.numMoves == b.h*b.w
 }
