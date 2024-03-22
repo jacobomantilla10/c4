@@ -74,6 +74,18 @@ func TestIsWinningMove(t *testing.T) {
 	}
 }
 
+func TestUnplay(t *testing.T) {
+	initial, _ := MakeBoardFromString("445566")
+	after, _ := MakeBoardFromString("445566")
+	after.Play(5)
+	after.Unplay(5)
+	t.Run("Should be equal boards", func(t *testing.T) {
+		if initial.data != after.data {
+			t.Errorf("got %v want %v", after.data, initial.data)
+		}
+	})
+}
+
 func TestMakeBoardFromString(t *testing.T) {
 	//Set up
 	randBoardMatrix := [6][7]rune{}

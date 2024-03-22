@@ -67,7 +67,7 @@ func (b *Board) Play(y int) int {
 }
 
 func (b *Board) Unplay(y int) {
-	for x := len(b.data) - 1; x >= 0; x-- {
+	for x := 0; x < len(b.data); x++ {
 		if b.data[x][y] != 32 {
 			b.data[x][y] = ' '
 			b.numMoves--
@@ -95,6 +95,7 @@ func (b *Board) IsWinningMove(y int) bool {
 	}
 	// First figure out the row it goes into
 	x := b.Play(y)
+	b.Unplay(y)
 
 	l, r := y-1, y+1
 	for l >= 0 && b.data[x][l] == checker {
@@ -143,7 +144,6 @@ func (b *Board) IsWinningMove(y int) bool {
 		l--
 	}
 
-	b.Unplay(y)
 	return u-o > 4
 }
 

@@ -24,7 +24,7 @@ func GetBestMove(b connectfour.Board) int {
 		}
 
 		newBoard.Play(move)
-		branchScore := MiniMax(newBoard, 14, -1000, 1000, 1)
+		branchScore := MiniMax(newBoard, -1000, 1000, 1)
 		if branchScore < bestScore {
 			bestMove = move
 			bestScore = branchScore
@@ -33,9 +33,9 @@ func GetBestMove(b connectfour.Board) int {
 	return bestMove
 }
 
-func MiniMax(b connectfour.Board, depth, alpha, beta, isMaximizingPlayer int) int {
+func MiniMax(b connectfour.Board, alpha, beta, isMaximizingPlayer int) int {
 	// check to see if there is a draw and if there is return 0 and not sure what move //TODO ??
-	if b.IsDrawn() || depth == 0 {
+	if b.IsDrawn() {
 		return 0
 	}
 
@@ -57,7 +57,7 @@ func MiniMax(b connectfour.Board, depth, alpha, beta, isMaximizingPlayer int) in
 			}
 
 			newBoard.Play(move)
-			branchScore := MiniMax(newBoard, depth-1, alpha, beta, -1)
+			branchScore := MiniMax(newBoard, alpha, beta, -1)
 
 			if branchScore > bestScore {
 				bestScore = branchScore
@@ -81,7 +81,7 @@ func MiniMax(b connectfour.Board, depth, alpha, beta, isMaximizingPlayer int) in
 			}
 
 			newBoard.Play(move)
-			branchScore := MiniMax(newBoard, depth-1, alpha, beta, 1)
+			branchScore := MiniMax(newBoard, alpha, beta, 1)
 
 			if branchScore < bestScore {
 				bestScore = branchScore
