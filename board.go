@@ -39,20 +39,25 @@ func (b *Board) NumMoves() int {
 }
 
 func (b *Board) CanPlay(y int) bool {
-	return b.position&b.top_mask(y) == 0
+	return b.mask&b.top_mask(y) == 0
 }
 
 func (b *Board) top_mask(col int) uint64 {
-	return 1 << (b.h - 1) << (col * (b.h + 1))
+	return (1 << (b.h - 1)) << (col * (b.h + 1))
 }
 
 func (b *Board) bottom_mask(col int) uint64 {
 	return 1 << (col * (b.h + 1))
 }
 
+func (b *Board) column_mask(col int) uint64 {
+	return ((1 << b.h) - 1) << (col * (b.h + 1))
+}
+
 func (b *Board) Play(y int) {
-	b.mask |= (b.mask + b.bottom_mask(y))
 	b.position ^= b.mask
+	b.mask |= (b.mask + b.bottom_mask(y))
+	// b.position ^= b.mask
 	b.numMoves++
 }
 
@@ -101,7 +106,33 @@ func (b *Board) DrawBoard() {
 }
 
 func (b *Board) IsWinningMove(y int) bool {
-	// need to add the move to the corresponding column and then do the computations on that mf
+	// need to add the move to the corresponding column and then do the computations on that mf	return false
+	position := b.position
+	position |= (b.mask + b.bottom_mask(y)) & b.column_mask(y)
+
+	// now that you have all of the information you need to calculate all of the alignments
+
+	// horizontal
+	pos := (position << (b.h + 1)) & position
+	if (pos<<((b.h+1)*2))&pos != 0 {
+		return true
+	}
+
+	pos = (position << (b.h)) & position
+	if (pos<<(b.h*2))&pos != 0 {
+		return true
+	}
+
+	pos = (position << (b.h + 2)) & position
+	if (pos<<((b.h+2)*2))&pos != 0 {
+		return true
+	}
+
+	pos = (position << 1) & position
+	if (pos<<2)&pos != 0 {
+		return true
+	}
+
 	return false
 }
 
