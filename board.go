@@ -61,6 +61,10 @@ func (b *Board) Play(y int) {
 	b.numMoves++
 }
 
+func (b *Board) Key() uint64 {
+	return b.position + b.mask
+}
+
 func (b *Board) DrawBoard() {
 	// write algorithm to convert number to rune array used to render position
 	//posArr := []uint64{0, 0, 0, 0, 0, 0, 0} // need to map bit at (i, j) to (j, i)

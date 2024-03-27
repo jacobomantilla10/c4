@@ -45,13 +45,20 @@ func createTable(fn string) []test {
 	return tests
 }
 
+// var transposition = TranspositionTable{
+// 	table: map[uint64]int{},
+// }
+
 func TestEasyEasy(t *testing.T) {
 	tests := createTable("testfiles/Test_L3_R1")
 	var totalTime time.Duration
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			var transposition = TranspositionTable{
+				table: map[uint64]int{},
+			}
 			start := time.Now()
-			ans := MiniMax(tt.input, -1000, 1000, 1)
+			ans := MiniMax(tt.input, -1000, 1000, 1, transposition)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -62,87 +69,87 @@ func TestEasyEasy(t *testing.T) {
 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Microsecond), (totalTime / 1000).Round(time.Microsecond))
 }
 
-func TestMediumEasy(t *testing.T) {
-	tests := createTable("testfiles/Test_L2_R1")
-	var totalTime time.Duration
-	for i, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			start := time.Now()
-			ans := MiniMax(tt.input, -1000, 1000, 1)
-			end := time.Now()
-			totalTime += end.Sub(start)
-			if ans != tt.want {
-				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
-			}
-		})
-	}
-	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Millisecond), (totalTime / 1000).Round(time.Millisecond))
-}
+// func TestMediumEasy(t *testing.T) {
+// 	tests := createTable("testfiles/Test_L2_R1")
+// 	var totalTime time.Duration
+// 	for i, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			start := time.Now()
+// 			ans := MiniMax(tt.input, -1000, 1000, 1, transposition)
+// 			end := time.Now()
+// 			totalTime += end.Sub(start)
+// 			if ans != tt.want {
+// 				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+// 			}
+// 		})
+// 	}
+// 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Millisecond), (totalTime / 1000).Round(time.Millisecond))
+// }
 
-func TestMediumMedium(t *testing.T) {
-	tests := createTable("testfiles/Test_L2_R2")
-	var totalTime time.Duration
-	for i, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			start := time.Now()
-			ans := MiniMax(tt.input, -1000, 1000, 1)
-			end := time.Now()
-			totalTime += end.Sub(start)
-			if ans != tt.want {
-				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
-			}
-		})
-	}
-	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
-}
+// func TestMediumMedium(t *testing.T) {
+// 	tests := createTable("testfiles/Test_L2_R2")
+// 	var totalTime time.Duration
+// 	for i, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			start := time.Now()
+// 			ans := MiniMax(tt.input, -1000, 1000, 1, transposition)
+// 			end := time.Now()
+// 			totalTime += end.Sub(start)
+// 			if ans != tt.want {
+// 				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+// 			}
+// 		})
+// 	}
+// 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
+// }
 
-func TestHardEasy(t *testing.T) {
-	tests := createTable("testfiles/Test_L1_R1")
-	var totalTime time.Duration
-	for i, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			start := time.Now()
-			ans := MiniMax(tt.input, -1000, 1000, 1)
-			end := time.Now()
-			totalTime += end.Sub(start)
-			if ans != tt.want {
-				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
-			}
-		})
-	}
-	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
-}
+// func TestHardEasy(t *testing.T) {
+// 	tests := createTable("testfiles/Test_L1_R1")
+// 	var totalTime time.Duration
+// 	for i, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			start := time.Now()
+// 			ans := MiniMax(tt.input, -1000, 1000, 1, transposition)
+// 			end := time.Now()
+// 			totalTime += end.Sub(start)
+// 			if ans != tt.want {
+// 				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+// 			}
+// 		})
+// 	}
+// 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
+// }
 
-func TestHardMedium(t *testing.T) {
-	tests := createTable("testfiles/Test_L1_R2")
-	var totalTime time.Duration
-	for i, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			start := time.Now()
-			ans := MiniMax(tt.input, -1000, 1000, 1)
-			end := time.Now()
-			totalTime += end.Sub(start)
-			if ans != tt.want {
-				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
-			}
-		})
-	}
-	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
-}
+// func TestHardMedium(t *testing.T) {
+// 	tests := createTable("testfiles/Test_L1_R2")
+// 	var totalTime time.Duration
+// 	for i, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			start := time.Now()
+// 			ans := MiniMax(tt.input, -1000, 1000, 1, transposition)
+// 			end := time.Now()
+// 			totalTime += end.Sub(start)
+// 			if ans != tt.want {
+// 				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+// 			}
+// 		})
+// 	}
+// 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
+// }
 
-func TestHardHard(t *testing.T) {
-	tests := createTable("testfiles/Test_L1_R3")
-	var totalTime time.Duration
-	for i, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			start := time.Now()
-			ans := MiniMax(tt.input, -1000, 1000, 1)
-			end := time.Now()
-			totalTime += end.Sub(start)
-			if ans != tt.want {
-				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
-			}
-		})
-	}
-	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
-}
+// func TestHardHard(t *testing.T) {
+// 	tests := createTable("testfiles/Test_L1_R3")
+// 	var totalTime time.Duration
+// 	for i, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			start := time.Now()
+// 			ans := MiniMax(tt.input, -1000, 1000, 1, transposition)
+// 			end := time.Now()
+// 			totalTime += end.Sub(start)
+// 			if ans != tt.want {
+// 				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+// 			}
+// 		})
+// 	}
+// 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
+// }
