@@ -1,3 +1,3 @@
 module github.com/jacobomantilla10/connect-four
 
-go 1.20
+go 1.22
