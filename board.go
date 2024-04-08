@@ -133,6 +133,21 @@ func (b *Board) IsDrawn() bool {
 	return b.numMoves == HEIGHT*WIDTH
 }
 
+// Return all of the moves that a player has that don't result in a loss
+func (b *Board) PossibleNonLosingMoves() uint64 {
+	return 0
+}
+
+// Get a bitmap of all possible moves for a player
+func (b *Board) possible() uint64 {
+	return 0
+}
+
+// Check all of the 3-alignments possible for a player
+func (b *Board) opponentWinningPosition() uint64 {
+	return 0
+}
+
 func top_mask(col int) uint64 {
 	return (1 << (HEIGHT - 1)) << (col * (HEIGHT + 1))
 }
