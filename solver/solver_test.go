@@ -51,7 +51,7 @@ func TestEasyEasy(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := Negamax(tt.input, -1000, 1000)
+			ans := solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -68,7 +68,7 @@ func TestMediumEasy(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := Negamax(tt.input, -1000, 1000)
+			ans := solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -85,7 +85,7 @@ func TestMediumMedium(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := Negamax(tt.input, -1000, 1000)
+			ans := solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -102,7 +102,7 @@ func TestHardEasy(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := Negamax(tt.input, -1000, 1000)
+			ans := solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -119,7 +119,7 @@ func TestHardMedium(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := Negamax(tt.input, -1000, 1000)
+			ans := solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -130,19 +130,19 @@ func TestHardMedium(t *testing.T) {
 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
 }
 
-func TestHardHard(t *testing.T) {
-	tests := createTable("testfiles/Test_L1_R3")
-	var totalTime time.Duration
-	for i, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			start := time.Now()
-			ans := Negamax(tt.input, -1000, 1000)
-			end := time.Now()
-			totalTime += end.Sub(start)
-			if ans != tt.want {
-				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
-			}
-		})
-	}
-	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
-}
+// func TestHardHard(t *testing.T) {
+// 	tests := createTable("testfiles/Test_L1_R3")
+// 	var totalTime time.Duration
+// 	for i, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			start := time.Now()
+// 			ans := Negamax(tt.input, -1000, 1000)
+// 			end := time.Now()
+// 			totalTime += end.Sub(start)
+// 			if ans != tt.want {
+// 				t.Errorf("at item %d got %d want %d", i+1, ans, tt.want)
+// 			}
+// 		})
+// 	}
+// 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
+// }

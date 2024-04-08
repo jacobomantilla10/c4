@@ -12,25 +12,28 @@ const (
 	EXACT = iota
 )
 
-var TranspositionTable = make([]Transposition, 10000)
+type TranspositionTable struct {
+	Table []Transposition
+	Count int
+}
 
 // implement index put and get
-func index(key uint64) uint64 {
-	return uint64(key % 10000)
+func index(key uint64, size int) int {
+	return int(key) % size
 }
 
-func Put(key uint64, val, flag int) {
+func (t *TranspositionTable) Put(key uint64, val, flag int) {
 	// calculate the index based on the position
-	index := index(key)
-	TranspositionTable[index].Key = key
-	TranspositionTable[index].Val = val
-	TranspositionTable[index].Flag = flag
+	index := index(key, len(t.Table))
+	t.Table[index].Key = key
+	t.Table[index].Val = val
+	t.Table[index].Flag = flag
 }
 
-func Get(key uint64) Transposition {
-	index := index(key)
-	if TranspositionTable[index].Key == key {
-		return TranspositionTable[index]
+func (t *TranspositionTable) Get(key uint64) Transposition {
+	index := index(key, len(t.Table))
+	if t.Table[index].Key == key {
+		return t.Table[index]
 	} else {
 		return Transposition{Key: 0, Val: -999, Flag: 0}
 	}

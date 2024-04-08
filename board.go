@@ -12,14 +12,14 @@ type Board struct {
 	numMoves int
 }
 
+const (
+	WIDTH  = 7
+	HEIGHT = 6
+)
+
 func MakeBoard() Board {
 	return Board{7, 6, 0, 0, 0}
 }
-
-// func MakeBoardWithMatrix(m [6][7]rune) Board {
-// 	// TODO if this is going to be correct then we need to get the right numMoves in there and not 0
-// 	return Board{6, 7, m, 0}
-// }
 
 func MakeBoardFromString(s string) (Board, error) {
 	board := MakeBoard()
@@ -39,24 +39,12 @@ func (b *Board) NumMoves() int {
 }
 
 func (b *Board) CanPlay(y int) bool {
-	return b.mask&b.top_mask(y) == 0
-}
-
-func (b *Board) top_mask(col int) uint64 {
-	return (1 << (b.h - 1)) << (col * (b.h + 1))
-}
-
-func (b *Board) bottom_mask(col int) uint64 {
-	return 1 << (col * (b.h + 1))
-}
-
-func (b *Board) column_mask(col int) uint64 {
-	return ((1 << b.h) - 1) << (col * (b.h + 1))
+	return (y >= 0 && y <= 6) && b.mask&top_mask(y) == 0
 }
 
 func (b *Board) Play(y int) {
 	b.position ^= b.mask
-	b.mask |= (b.mask + b.bottom_mask(y))
+	b.mask |= (b.mask + bottom_mask(y))
 	// b.position ^= b.mask
 	b.numMoves++
 }
@@ -112,7 +100,7 @@ func (b *Board) DrawBoard() {
 func (b *Board) IsWinningMove(y int) bool {
 	// need to add the move to the corresponding column and then do the computations on that mf	return false
 	position := b.position
-	position |= (b.mask + b.bottom_mask(y)) & b.column_mask(y)
+	position |= (b.mask + bottom_mask(y)) & column_mask(y)
 
 	// now that you have all of the information you need to calculate all of the alignments
 
@@ -141,5 +129,18 @@ func (b *Board) IsWinningMove(y int) bool {
 }
 
 func (b *Board) IsDrawn() bool {
-	return b.numMoves == b.h*b.w
+	// The game is drawn if we have played in all slots and haven't won
+	return b.numMoves == HEIGHT*WIDTH
+}
+
+func top_mask(col int) uint64 {
+	return (1 << (HEIGHT - 1)) << (col * (HEIGHT + 1))
+}
+
+func bottom_mask(col int) uint64 {
+	return 1 << (col * (HEIGHT + 1))
+}
+
+func column_mask(col int) uint64 {
+	return ((1 << HEIGHT) - 1) << (col * (HEIGHT + 1))
 }

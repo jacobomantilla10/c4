@@ -25,12 +25,12 @@ func TestCanPlay(t *testing.T) {
 		input int
 		want  bool
 	}{
-		// {"8 is out of bounds", 8, false},
-		// {"0 is out of bounds", 0, false},
+		{"8 is out of bounds", 8, false},
+		{"0 is out of bounds", 0, false},
 		{"1 is a valid insert", 1, true},
 		{"7 is a valid insert", 7, true},
-		// {"9065 is out of bounds", 9065, false},
-		// {"-2 is out of bounds", -2, false},
+		{"9065 is out of bounds", 9065, false},
+		{"-2 is out of bounds", -2, false},
 		{"3 is full so we can't play", 3, false},
 	}
 
@@ -43,6 +43,30 @@ func TestCanPlay(t *testing.T) {
 			ans := board.CanPlay(tt.input - 1)
 			if ans != tt.want {
 				t.Errorf("got %t expected %t", ans, tt.want)
+			}
+		})
+	}
+}
+
+func TestTopMask(t *testing.T) {
+	var tests = []struct {
+		name string
+		col  int
+		want uint64
+	}{
+		{"First column top mask", 1, 0},
+		{"Second column top mask", 2, 0},
+		{"Third column top mask", 3, 0},
+		{"Fourth column top mask", 4, 0},
+		{"Fifth column top mask", 5, 0},
+		{"Sixth column top mask", 6, 0},
+		{"Seventh column top mask", 7, 0},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ans := top_mask(tt.col)
+			if ans != tt.want {
+				t.Errorf("got %d expected %d", ans, tt.want)
 			}
 		})
 	}
@@ -69,6 +93,28 @@ func TestIsWinningMove(t *testing.T) {
 			ans := board.IsWinningMove(tt.col - 1)
 			if ans != tt.want {
 				t.Errorf("got %t, want %t", ans, tt.want)
+			}
+		})
+	}
+}
+
+func TestNumMoves(t *testing.T) {
+	var tests = []struct {
+		name        string
+		boardString string
+	}{
+		{"This board has 39 moves", "3135151421347443544172316522225776773566"},
+		{"This board has 35 moves", "11513154335437461536136677566452744"},
+		{"This board has 15 moves", "641335277532624"},
+		{"This board has 4 moves", "4737"},
+		{"This board has 0 moves", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			board, _ := MakeBoardFromString(tt.boardString)
+			if board.NumMoves() != len(tt.boardString) {
+				t.Errorf("got %d want %d", board.NumMoves(), len(tt.boardString))
 			}
 		})
 	}
