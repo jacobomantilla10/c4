@@ -4,20 +4,20 @@ import (
 	connectfour "github.com/jacobomantilla10/connect-four"
 )
 
-var defaultMoveOrder = [7]int{3, 2, 4, 1, 5, 0, 6}
+var DefaultMoveOrder = [7]int{3, 2, 4, 1, 5, 0, 6}
 var transpositionTable = TranspositionTable{Table: make([]Transposition, 1000), Count: 0}
 
 func GetBestMove(b connectfour.Board) int {
 	bestMove := 0
 	bestScore := 1000
 
-	for _, move := range defaultMoveOrder {
+	for _, move := range DefaultMoveOrder {
 		if b.CanPlay(move) && b.IsWinningMove(move) {
 			return move
 		}
 	}
 
-	for _, move := range defaultMoveOrder {
+	for _, move := range DefaultMoveOrder {
 		newBoard := b
 
 		if !newBoard.CanPlay(move) {
@@ -65,18 +65,20 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 		return 0
 	}
 
-	for _, move := range defaultMoveOrder {
+	for _, move := range DefaultMoveOrder {
 		if b.CanPlay(move) && b.IsWinningMove(move) {
 			return ((connectfour.WIDTH*connectfour.HEIGHT + 1 - b.NumMoves()) / 2)
 		}
 	}
 
 	// If there are no moves that don't cause us the opponent to win return opponent winning score
-	if possibleNonLosingMoves := b.PossibleNonLosingMoves(); possibleNonLosingMoves == 0 {
+	possibleNonLosingMoves := b.PossibleNonLosingMoves()
+	if len(possibleNonLosingMoves) == 0 {
 		return -(connectfour.WIDTH*connectfour.HEIGHT - b.NumMoves()) / 2
 	}
 
-	// TODO update bestscore to be computed off of b.NumMoves()
+	// TODO only use the possibleNonLosingMoves in our set of moves
+
 	best := ((connectfour.WIDTH*connectfour.HEIGHT - 1 - b.NumMoves()) / 2)
 	beta = min(beta, best)
 	if beta <= alpha {
@@ -106,7 +108,7 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 
 	// TODO write code that uses the sorter code to generate better move ordering
 	moveOrder := OrderedMoves()
-	for _, move := range defaultMoveOrder {
+	for _, move := range possibleNonLosingMoves {
 		// get bitboard and pass it into population count to get the score
 		// the pass in the score and the column into the insert function
 		newBoard := b

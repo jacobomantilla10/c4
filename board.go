@@ -133,22 +133,35 @@ func (b *Board) IsDrawn() bool {
 }
 
 // Return all of the moves that a player has that don't result in a loss
-func (b *Board) PossibleNonLosingMoves() uint64 {
-	possibleMoves := b.possible()
+func (b *Board) PossibleNonLosingMoves() []int {
+	possible := b.possible()
 	opponentWinningMoves := b.OpponentWinningPosition()
 	// moves where opponent would win if we didn't play there
-	forcedMoves := possibleMoves & opponentWinningMoves
+	forcedMoves := possible & opponentWinningMoves
 	if forcedMoves != 0 {
 		// check to see if there is more than one forced move
 		if forcedMoves&(forcedMoves-1) != 0 {
-			return 0
+			return []int{}
 		} else {
 			// the only possible non losing move is our forced move
-			possibleMoves = forcedMoves
+			possible = forcedMoves
 		}
 	}
-	// don't play below an opponent's winning slot
-	return possibleMoves & ^(opponentWinningMoves >> 1)
+	// can't play in a slot that set's up the opponent for a connection
+	res := possible & ^(opponentWinningMoves >> 1)
+	// default move order used to order remaining non-losing moves
+	defaultMoveOrder := [7]int{3, 2, 4, 1, 5, 0, 6}
+	// our result, a slice of all of the possible non losing moves
+	possibleMoves := []int{}
+
+	// convert bitboard result into array of non-losing moves
+	for _, col := range defaultMoveOrder {
+		// if a column has at least one non losing move we append it to our result
+		if (res>>(col*(HEIGHT+1)))&(0b0111111) != 0 {
+			possibleMoves = append(possibleMoves, col)
+		}
+	}
+	return possibleMoves
 }
 
 // Get a bitmap of all possible moves for a player
