@@ -45,7 +45,6 @@ func (b *Board) CanPlay(y int) bool {
 func (b *Board) Play(y int) {
 	b.position ^= b.mask
 	b.mask |= (b.mask + bottom_mask(y))
-	// b.position ^= b.mask
 	b.numMoves++
 }
 
@@ -135,17 +134,57 @@ func (b *Board) IsDrawn() bool {
 
 // Return all of the moves that a player has that don't result in a loss
 func (b *Board) PossibleNonLosingMoves() uint64 {
-	return 0
+	possibleMoves := b.possible()
+	opponentWinningMoves := b.OpponentWinningPosition()
+	// moves where opponent would win if we didn't play there
+	forcedMoves := possibleMoves & opponentWinningMoves
+	if forcedMoves != 0 {
+		// check to see if there is more than one forced move
+		if forcedMoves&(forcedMoves-1) != 0 {
+			return 0
+		} else {
+			// the only possible non losing move is our forced move
+			possibleMoves = forcedMoves
+		}
+	}
+	// don't play below an opponent's winning slot
+	return possibleMoves & ^(opponentWinningMoves >> 1)
 }
 
 // Get a bitmap of all possible moves for a player
 func (b *Board) possible() uint64 {
-	return 0
+	return (b.mask + bottom_board_mask(7, 6)) & board_mask()
 }
 
 // Check all of the 3-alignments possible for a player
-func (b *Board) opponentWinningPosition() uint64 {
-	return 0
+func (b *Board) OpponentWinningPosition() uint64 {
+	position := b.position ^ b.mask
+
+	// vertical alignment
+	res := (position << 1) & (position << 2) & (position << 3)
+	// horizontal alignment
+	pos := (position << (HEIGHT + 1)) & (position << ((HEIGHT + 1) * 2))
+	res |= pos & (position << ((HEIGHT + 1) * 3))
+	res |= pos & (position >> (HEIGHT + 1))
+	pos >>= ((HEIGHT + 1) * 3)
+	res |= pos & (position << (HEIGHT + 1))
+	res |= pos & (position >> ((HEIGHT + 1) * 3))
+	// first diagonal
+	pos = (position << HEIGHT) & (position << (HEIGHT * 2))
+	res |= pos & (position << (HEIGHT * 3))
+	res |= pos & (position >> HEIGHT)
+	pos >>= (HEIGHT * 3)
+	res |= pos & (position << HEIGHT)
+	res |= pos & (position >> (HEIGHT * 3))
+	// second diagonal
+	pos = (position << (HEIGHT + 2)) & (position << ((HEIGHT + 2) * 2))
+	res |= pos & (position << ((HEIGHT + 2) * 3))
+	res |= pos & (position >> (HEIGHT + 2))
+	pos >>= ((HEIGHT + 2) * 3)
+	res |= pos & (position << (HEIGHT + 2))
+	res |= pos & (position >> ((HEIGHT + 2) * 3))
+	// TODO pq
+	return res & (board_mask() ^ b.mask)
 }
 
 func top_mask(col int) uint64 {
@@ -158,4 +197,15 @@ func bottom_mask(col int) uint64 {
 
 func column_mask(col int) uint64 {
 	return ((1 << HEIGHT) - 1) << (col * (HEIGHT + 1))
+}
+
+func bottom_board_mask(width, height int) uint64 {
+	if width == 0 {
+		return 0
+	}
+	return bottom_board_mask(width-1, height) | uint64(1<<((width-1)*(height+1)))
+}
+
+func board_mask() uint64 {
+	return 0b0111111011111101111110111111011111101111110111111
 }

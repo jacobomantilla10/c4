@@ -66,7 +66,7 @@ func TestTopMask(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ans := top_mask(tt.col)
 			if ans != tt.want {
-				t.Errorf("got %d expected %d", ans, tt.want)
+				t.Errorf("got %b expected %b", ans, tt.want)
 			}
 		})
 	}
@@ -118,6 +118,16 @@ func TestNumMoves(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestBottomBoardMask(t *testing.T) {
+	t.Run("Bottom Mask test", func(t *testing.T) {
+		want := 0b0000001000000100000010000001000000100000010000001
+		res := bottom_board_mask(7, 6)
+		if res != uint64(want) {
+			t.Errorf("got %b want %b", res, want)
+		}
+	})
 }
 
 // func TestMakeBoardFromString(t *testing.T) {

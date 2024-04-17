@@ -4,20 +4,20 @@ import (
 	connectfour "github.com/jacobomantilla10/connect-four"
 )
 
-var moveOrder = [7]int{3, 2, 4, 1, 5, 0, 6}
+var defaultMoveOrder = [7]int{3, 2, 4, 1, 5, 0, 6}
 var transpositionTable = TranspositionTable{Table: make([]Transposition, 1000), Count: 0}
 
 func GetBestMove(b connectfour.Board) int {
 	bestMove := 0
 	bestScore := 1000
 
-	for _, move := range moveOrder {
+	for _, move := range defaultMoveOrder {
 		if b.CanPlay(move) && b.IsWinningMove(move) {
 			return move
 		}
 	}
 
-	for _, move := range moveOrder {
+	for _, move := range defaultMoveOrder {
 		newBoard := b
 
 		if !newBoard.CanPlay(move) {
@@ -65,10 +65,15 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 		return 0
 	}
 
-	for _, move := range moveOrder {
+	for _, move := range defaultMoveOrder {
 		if b.CanPlay(move) && b.IsWinningMove(move) {
 			return ((connectfour.WIDTH*connectfour.HEIGHT + 1 - b.NumMoves()) / 2)
 		}
+	}
+
+	// If there are no moves that don't cause us the opponent to win return opponent winning score
+	if possibleNonLosingMoves := b.PossibleNonLosingMoves(); possibleNonLosingMoves == 0 {
+		return -(connectfour.WIDTH*connectfour.HEIGHT - b.NumMoves()) / 2
 	}
 
 	// TODO update bestscore to be computed off of b.NumMoves()
@@ -78,7 +83,7 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 		return beta
 	}
 
-	worst := -(connectfour.WIDTH*connectfour.HEIGHT + 1 - b.NumMoves()) / 2
+	worst := -(connectfour.WIDTH*connectfour.HEIGHT - 2 - b.NumMoves()) / 2
 	alpha = max(alpha, worst)
 	if beta <= alpha {
 		return alpha
@@ -98,15 +103,27 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 			return tt.Val
 		}
 	}
+
+	// TODO write code that uses the sorter code to generate better move ordering
+	moveOrder := OrderedMoves()
+	for _, move := range defaultMoveOrder {
+		// get bitboard and pass it into population count to get the score
+		// the pass in the score and the column into the insert function
+		newBoard := b
+		newBoard.Play(move)
+		score := PopCount(newBoard.OpponentWinningPosition())
+		moveOrder.Insert(move, score)
+	}
+
 	bestScore := -1000
-	for _, move := range moveOrder {
+	for _, move := range moveOrder.moves {
 		newBoard := b
 
-		if !newBoard.CanPlay(move) {
+		if !newBoard.CanPlay(move.col) {
 			continue
 		}
 
-		newBoard.Play(move)
+		newBoard.Play(move.col)
 		branchScore := -Negamax(newBoard, -beta, -alpha)
 
 		bestScore = max(bestScore, branchScore)
