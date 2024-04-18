@@ -92,17 +92,17 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 	}
 
 	tt := transpositionTable.Get(b.Key())
-	if tt.Val != -999 {
+	if tt.Val != -128 {
 		if tt.Flag == EXACT {
-			return tt.Val
+			return int(tt.Val)
 		} else if tt.Flag == LOWER {
-			alpha = max(alpha, tt.Val)
+			alpha = max(alpha, int(tt.Val))
 		} else if tt.Flag == UPPER {
-			beta = min(beta, tt.Val)
+			beta = min(beta, int(tt.Val))
 		}
 
 		if alpha >= beta {
-			return tt.Val
+			return int(tt.Val)
 		}
 	}
 
