@@ -34,6 +34,10 @@ func MakeBoardFromString(s string) (Board, error) {
 	return board, nil
 }
 
+func MakeBoardFromOpening(position uint64, mask uint64, numMoves int) Board {
+	return Board{7, 6, position, mask, numMoves}
+}
+
 func (b *Board) NumMoves() int {
 	return b.numMoves
 }
@@ -44,7 +48,7 @@ func (b *Board) CanPlay(y int) bool {
 
 func (b *Board) Play(y int) {
 	b.position ^= b.mask
-	b.mask |= (b.mask + bottom_mask(y))
+	b.mask |= (b.mask + Bottom_mask(y))
 	b.numMoves++
 }
 
@@ -99,7 +103,7 @@ func (b *Board) DrawBoard() {
 func (b *Board) IsWinningMove(y int) bool {
 	// need to add the move to the corresponding column and then do the computations on that mf	return false
 	position := b.position
-	position |= (b.mask + bottom_mask(y)) & column_mask(y)
+	position |= (b.mask + Bottom_mask(y)) & column_mask(y)
 
 	// now that you have all of the information you need to calculate all of the alignments
 
@@ -204,7 +208,7 @@ func top_mask(col int) uint64 {
 	return (1 << (HEIGHT - 1)) << (col * (HEIGHT + 1))
 }
 
-func bottom_mask(col int) uint64 {
+func Bottom_mask(col int) uint64 {
 	return 1 << (col * (HEIGHT + 1))
 }
 
