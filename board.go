@@ -42,6 +42,14 @@ func (b *Board) NumMoves() int {
 	return b.numMoves
 }
 
+func (b *Board) Position() uint64 {
+	return b.position
+}
+
+func (b *Board) Mask() uint64 {
+	return b.mask
+}
+
 func (b *Board) CanPlay(y int) bool {
 	return (y >= 0 && y <= 6) && b.mask&top_mask(y) == 0
 }

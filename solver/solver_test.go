@@ -51,7 +51,7 @@ func TestEasyEasy(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := solve(tt.input)
+			ans := Solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -68,7 +68,7 @@ func TestMediumEasy(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := solve(tt.input)
+			ans := Solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -85,7 +85,7 @@ func TestMediumMedium(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := solve(tt.input)
+			ans := Solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -102,7 +102,7 @@ func TestHardEasy(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := solve(tt.input)
+			ans := Solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -119,7 +119,7 @@ func TestHardMedium(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := solve(tt.input)
+			ans := Solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {
@@ -136,7 +136,7 @@ func TestHardHard(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			start := time.Now()
-			ans := solve(tt.input)
+			ans := Solve(tt.input)
 			end := time.Now()
 			totalTime += end.Sub(start)
 			if ans != tt.want {

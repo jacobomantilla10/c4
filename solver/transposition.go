@@ -17,7 +17,7 @@ type TranspositionTable struct {
 	Count int
 }
 
-// implement index put and get
+// Gets the index of a key in the transposition table
 func index(key uint64, size int) int {
 	return int(key) % size
 }
@@ -25,9 +25,11 @@ func index(key uint64, size int) int {
 func (t *TranspositionTable) Put(key uint64, val int, flag uint8) {
 	// calculate the index based on the position
 	index := index(key, len(t.Table))
+	// set values
 	t.Table[index].Key = key
 	t.Table[index].Val = int8(val)
 	t.Table[index].Flag = flag
+	t.Count++
 }
 
 func (t *TranspositionTable) Get(key uint64) Transposition {
