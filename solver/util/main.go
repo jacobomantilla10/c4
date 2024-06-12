@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	connectfour "github.com/jacobomantilla10/connect-four"
+	"github.com/jacobomantilla10/connect-four/game"
 	"github.com/jacobomantilla10/connect-four/solver"
 )
 
@@ -41,7 +41,7 @@ func CreateExactOpeningsFile() {
 		// key, _ := strconv.Atoi(fields[2])
 		val, _ := strconv.Atoi(fields[3])
 
-		board := connectfour.MakeBoardFromOpening(uint64(pos), uint64(mask), 8)
+		board := game.MakeBoardFromOpening(uint64(pos), uint64(mask), 8)
 		fmt.Printf("Solving board %d...", i)
 		if val == 0 {
 			lines = append(lines, fmt.Sprintf("%d %d", board.Key(), 0))
@@ -100,7 +100,7 @@ func CreateOpeningsFile() {
 }
 
 // Takes in a line from our connect-4.data file and converts it into a board
-func boardFromDataLine(board []string) connectfour.Board {
+func boardFromDataLine(board []string) game.Board {
 	numMoves := 8
 
 	var mask uint64
@@ -109,14 +109,14 @@ func boardFromDataLine(board []string) connectfour.Board {
 		for j := 0; j < 6; j++ {
 			if board[(i*6)+j] == "x" {
 				// update mask
-				mask |= (mask + connectfour.Bottom_mask(i))
+				mask |= (mask + game.Bottom_mask(i))
 				// update board
-				position |= ((1 << (i * (connectfour.HEIGHT + 1))) << j)
+				position |= ((1 << (i * (game.HEIGHT + 1))) << j)
 			} else if board[(i*6)+j] == "o" {
 				// update mask
-				mask |= (mask + connectfour.Bottom_mask(i))
+				mask |= (mask + game.Bottom_mask(i))
 			}
 		}
 	}
-	return connectfour.MakeBoardFromOpening(position, mask, numMoves)
+	return game.MakeBoardFromOpening(position, mask, numMoves)
 }

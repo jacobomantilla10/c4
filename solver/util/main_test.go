@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	connectfour "github.com/jacobomantilla10/connect-four"
+	"github.com/jacobomantilla10/connect-four/game"
 )
 
 func TestBoardFromDataLine(t *testing.T) {
-	b1, _ := connectfour.MakeBoardFromString("33444444")
-	b2, _ := connectfour.MakeBoardFromString("35444444")
-	b3, _ := connectfour.MakeBoardFromString("32444444")
+	b1, _ := game.MakeBoardFromString("33444444")
+	b2, _ := game.MakeBoardFromString("35444444")
+	b3, _ := game.MakeBoardFromString("32444444")
 	var tests = []struct {
 		input []string
 		want  uint64

@@ -1,10 +1,15 @@
-package connectfour
+package game
 
 import (
 	"fmt"
 )
 
-// TODO implement a column order array that arranges moves from the center to the outside and use that in your MiniMax
+// Representation of board of width w and height h.
+// position is a 49 bit binary number where a 0 represents
+// either an empty square or an opponent token and 1 represents
+// a current player token. Mask is a 49 bit binary number where
+// a 0 represents an open slot and a 1 represents a filled slot.
+// numMoves counts the amount of moves played so far in the game.
 type Board struct {
 	w, h     int
 	position uint64
@@ -17,10 +22,15 @@ const (
 	HEIGHT = 6
 )
 
+// Initializes and returns empty board.
 func MakeBoard() Board {
 	return Board{7, 6, 0, 0, 0}
 }
 
+// Used for perf testing. Initializes and returns a board given by
+// a string such as "433221" that gives tells us player 1 played in col 4,
+// then player 2 in col 3, and so on. Returns an error if the string depicts
+// an invalid board.
 func MakeBoardFromString(s string) (Board, error) {
 	board := MakeBoard()
 	//play the moves as detailed in the string
@@ -34,39 +44,46 @@ func MakeBoardFromString(s string) (Board, error) {
 	return board, nil
 }
 
+// Used for testing. Initializes and returns a board with position, mask, and
+// numMoves passed in as arguments.
 func MakeBoardFromOpening(position uint64, mask uint64, numMoves int) Board {
 	return Board{7, 6, position, mask, numMoves}
 }
 
+// Gets the number of moves.
 func (b *Board) NumMoves() int {
 	return b.numMoves
 }
 
+// Gets the position of the board.
 func (b *Board) Position() uint64 {
 	return b.position
 }
 
+// Gets the mask of the board.
 func (b *Board) Mask() uint64 {
 	return b.mask
 }
 
+// Returns true if we can play a move and false otherwise
 func (b *Board) CanPlay(y int) bool {
 	return (y >= 0 && y <= 6) && b.mask&top_mask(y) == 0
 }
 
+// Plays a move in column y
 func (b *Board) Play(y int) {
 	b.position ^= b.mask
 	b.mask |= (b.mask + Bottom_mask(y))
 	b.numMoves++
 }
 
+// Gives us a unique key for the board.
 func (b *Board) Key() uint64 {
 	return b.position + b.mask
 }
 
+// Draws board with current position in terminal.
 func (b *Board) DrawBoard() {
-	// write algorithm to convert number to rune array used to render position
-	//posArr := []uint64{0, 0, 0, 0, 0, 0, 0} // need to map bit at (i, j) to (j, i)
 	currentPlayer, opponent := 'O', 'X'
 	if b.numMoves%2 == 1 {
 		currentPlayer, opponent = opponent, currentPlayer
@@ -85,9 +102,9 @@ func (b *Board) DrawBoard() {
 			currPos := b.position >> k
 			currMask := b.mask >> k
 			var char rune
-			if (currMask>>(j*6))&1 == 1 && (currPos>>(j*6))&1 == 1 {
+			if (currMask>>(j*7))&1 == 1 && (currPos>>(j*7))&1 == 1 {
 				char = currentPlayer
-			} else if (currMask>>(j*6))&1 == 1 && (currPos>>(j*6))&1 == 0 {
+			} else if (currMask>>(j*7))&1 == 1 && (currPos>>(j*7))&1 == 0 {
 				char = opponent
 			} else {
 				char = ' '
@@ -108,6 +125,7 @@ func (b *Board) DrawBoard() {
 	}
 }
 
+// Returns true if a move in col y wins the game and false if it doesn't.
 func (b *Board) IsWinningMove(y int) bool {
 	// need to add the move to the corresponding column and then do the computations on that mf	return false
 	position := b.position
@@ -139,6 +157,7 @@ func (b *Board) IsWinningMove(y int) bool {
 	return false
 }
 
+// Returns true if the game is drawn and false if it's not
 func (b *Board) IsDrawn() bool {
 	// The game is drawn if we have played in all slots and haven't won
 	return b.numMoves == HEIGHT*WIDTH
@@ -181,7 +200,7 @@ func (b *Board) possible() uint64 {
 	return (b.mask + bottom_board_mask(7, 6)) & board_mask()
 }
 
-// Check all of the 3-alignments possible for a player
+// Returns a binary number with a 1 for each three-alignment.
 func (b *Board) OpponentWinningPosition() uint64 {
 	position := b.position ^ b.mask
 

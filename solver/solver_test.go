@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	connectfour "github.com/jacobomantilla10/connect-four"
+	"github.com/jacobomantilla10/connect-four/game"
 )
 
 type test struct {
 	name  string
-	input connectfour.Board
+	input game.Board
 	want  int
 }
 
@@ -34,7 +34,7 @@ func createTable(fn string) []test {
 		fields := strings.Fields(line)
 		boardString := fields[0]
 		want, _ := strconv.Atoi(fields[1])
-		board, _ := connectfour.MakeBoardFromString(boardString)
+		board, _ := game.MakeBoardFromString(boardString)
 		tests = append(tests, test{fmt.Sprintf("%s should be %d", boardString, want), board, want})
 	}
 

@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 
-	connectfour "github.com/jacobomantilla10/connect-four"
+	"github.com/jacobomantilla10/connect-four/game"
 	"github.com/jacobomantilla10/connect-four/solver"
 )
 
 func main() {
-	board := connectfour.MakeBoard()
+	board := game.MakeBoard()
 	board.DrawBoard()
-	player1 := connectfour.MakePlayer(1, 'X')
-	player2 := connectfour.MakePlayer(2, 'O')
+	player1 := game.MakePlayer(1, 'X')
+	player2 := game.MakePlayer(2, 'O')
 	currPlayer := player2
 	isWin := false
 	isDraw := false

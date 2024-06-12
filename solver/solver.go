@@ -1,17 +1,16 @@
 package solver
 
 import (
-	connectfour "github.com/jacobomantilla10/connect-four"
+	"github.com/jacobomantilla10/connect-four/game"
 )
 
 var DefaultMoveOrder = [7]int{3, 2, 4, 1, 5, 0, 6}
-var transpositionTable = TranspositionTable{Table: make([]Transposition, 100000), Count: 0}
-
-//var openingBook = MakeOpeningBook()
+var transpositionTable = TranspositionTable{Table: make([]Transposition, 100000000), Count: 0}
+var openingBook = MakeOpeningBook()
 
 // Function used by game loop to get the best move in a position. Takes in
 // a board and returns the column corresponding to the best move.
-func GetBestMove(b connectfour.Board) int {
+func GetBestMove(b game.Board) int {
 	bestMove := 0
 	bestScore := 1000
 
@@ -29,7 +28,7 @@ func GetBestMove(b connectfour.Board) int {
 		}
 
 		newBoard.Play(move)
-		branchScore := Negamax(newBoard, -1000, 1000)
+		branchScore := Solve(newBoard)
 		if branchScore < bestScore {
 			bestMove = move
 			bestScore = branchScore
@@ -40,10 +39,10 @@ func GetBestMove(b connectfour.Board) int {
 
 // Calls negamax function on boards using iterative deepening and null window search
 // to optimize performance. Takes in a board and returns the best score for the position.
-func Solve(b connectfour.Board) int {
+func Solve(b game.Board) int {
 	// calculate the minimum and the maximum based on the current number of moves
-	min := -(connectfour.WIDTH*connectfour.HEIGHT - b.NumMoves()) / 2
-	max := (connectfour.WIDTH*connectfour.HEIGHT + 1 - b.NumMoves()) / 2
+	min := -(game.WIDTH*game.HEIGHT - b.NumMoves()) / 2
+	max := (game.WIDTH*game.HEIGHT + 1 - b.NumMoves()) / 2
 	// calculate the mid point between the two
 	for min < max {
 		mid := min + (max-min)/2
@@ -70,10 +69,8 @@ func Solve(b connectfour.Board) int {
 // The score is the amount of moves from the last move that a player will win in: 1
 // means that the current player will win in the last move, -5 means they'll lose in
 // the 5th to last move, and 0 is a draw.
-func Negamax(b connectfour.Board, alpha, beta int) int {
+func Negamax(b game.Board, alpha, beta int) int {
 	alphaOrig := alpha
-
-	// TODO query transpositiontable to get value and make check the flag
 
 	if b.IsDrawn() {
 		return 0
@@ -82,18 +79,23 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 	// loop through move order to see if an immediate win is available
 	for _, move := range DefaultMoveOrder {
 		if b.CanPlay(move) && b.IsWinningMove(move) {
-			return ((connectfour.WIDTH*connectfour.HEIGHT + 1 - b.NumMoves()) / 2)
+			return ((game.WIDTH*game.HEIGHT + 1 - b.NumMoves()) / 2)
 		}
+	}
+
+	opening := openingBook.Opening(b.Key())
+	if opening != -30 {
+		return int(opening)
 	}
 
 	// Check to see if opponent has a move that will cause us to lose next turn
 	possibleNonLosingMoves := b.PossibleNonLosingMoves()
 	if len(possibleNonLosingMoves) == 0 {
-		return -(connectfour.WIDTH*connectfour.HEIGHT - b.NumMoves()) / 2
+		return -(game.WIDTH*game.HEIGHT - b.NumMoves()) / 2
 	}
 
 	// Since we know we can't win with this move, we know our best score is bounded
-	best := ((connectfour.WIDTH*connectfour.HEIGHT - 1 - b.NumMoves()) / 2)
+	best := ((game.WIDTH*game.HEIGHT - 1 - b.NumMoves()) / 2)
 	// If our best is worse than beta, our opponents best guaranteed move (beta) gets set to best
 	beta = min(beta, best)
 	if beta <= alpha {
@@ -102,27 +104,12 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 
 	// Since we know our opponent can't win with their next move, we know their best score,
 	// and therefore our worst score, is bounded.
-	worst := -(connectfour.WIDTH*connectfour.HEIGHT - 2 - b.NumMoves()) / 2
+	worst := -(game.WIDTH*game.HEIGHT - 2 - b.NumMoves()) / 2
 	// If our worst score is better than alpha, our best guaranteed move (alpha) gets set to worst
 	alpha = max(alpha, worst)
 	if beta <= alpha {
 		return alpha
 	}
-
-	// opening := openingBook.Opening(b.Key())
-	// if opening.val != -2 {
-	// 	if opening.flag == EXACT {
-	// 		return int(opening.flag)
-	// 	} else if opening.flag == LOWER {
-	// 		alpha = max(alpha, int(opening.val))
-	// 	} else {
-	// 		beta = min(beta, int(opening.val))
-	// 	}
-
-	// 	if alpha >= beta {
-	// 		return int(opening.val)
-	// 	}
-	// }
 
 	// Check to see if we have stored current position in transposition table
 	tt := transpositionTable.Get(b.Key())
@@ -150,7 +137,7 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 	}
 
 	// Compute score for position and save it into bestScore
-	bestScore := -1000
+	bestScore := worst
 	for _, move := range moveOrder.moves {
 		newBoard := b
 
@@ -173,11 +160,11 @@ func Negamax(b connectfour.Board, alpha, beta int) int {
 	// Store computed score into transposition table
 	if bestScore <= alphaOrig {
 		// We never pushed alpha up, so every move we searched pruned.
-		// we don't know the true value, but we know it's an upper bound
+		// we don't know the true value, but we know it's an upper bound.
 		transpositionTable.Put(b.Key(), bestScore, UPPER)
 	} else if bestScore >= beta {
 		// Alpha was pushed up, but we pruned so all we know is that
-		// the score we have is the best of all the moves we examined
+		// the score we have is the best of all the moves we examined.
 		// therefore we can store is as a lower bound
 		transpositionTable.Put(b.Key(), bestScore, LOWER)
 	} else {

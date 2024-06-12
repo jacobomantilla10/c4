@@ -12,19 +12,20 @@ type move struct {
 // ordered descreasingly by how many three alignments they threaten to create.
 // It also contains size, which contains the amount of items in the array at a given time.
 type orderedMoves struct {
-	moves [7]move
+	moves []move
 	size  int
 }
 
 // Creates and returns empty orderedMoves struct
 func OrderedMoves() orderedMoves {
-	return orderedMoves{[7]move{}, 0}
+	return orderedMoves{[]move{}, 0}
 }
 
 // Inserts move into orderedMoves array in sorted (by amount of threats it generates) order
 func (o *orderedMoves) Insert(col, score int) {
 	o.size++
 	i := o.size - 1
+	o.moves = append(o.moves, move{})
 	for ; i >= 1 && o.moves[i-1].score < score; i-- {
 		o.moves[i] = o.moves[i-1]
 	}

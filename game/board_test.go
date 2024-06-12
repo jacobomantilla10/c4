@@ -1,4 +1,4 @@
-package connectfour
+package game
 
 import "testing"
 
