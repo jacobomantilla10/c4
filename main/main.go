@@ -24,7 +24,7 @@ func main() {
 		}
 
 		if currPlayer.GetId() == 2 {
-			move := solver.GetBestMove(board)
+			move, _ := solver.GetBestMove(board)
 			isWin = board.IsWinningMove(move)
 			board.Play(move)
 			isDraw = board.IsDrawn()

@@ -10,15 +10,9 @@ var openingBook = MakeOpeningBook()
 
 // Function used by game loop to get the best move in a position. Takes in
 // a board and returns the column corresponding to the best move.
-func GetBestMove(b game.Board) int {
+func GetBestMove(b game.Board) (int, int) {
 	bestMove := 0
 	bestScore := 1000
-
-	for _, move := range DefaultMoveOrder {
-		if b.CanPlay(move) && b.IsWinningMove(move) {
-			return move
-		}
-	}
 
 	for _, move := range DefaultMoveOrder {
 		newBoard := b
@@ -28,13 +22,13 @@ func GetBestMove(b game.Board) int {
 		}
 
 		newBoard.Play(move)
-		branchScore := Solve(newBoard)
+		branchScore := Negamax(newBoard, -1000, 1000, 24)
 		if branchScore < bestScore {
 			bestMove = move
 			bestScore = branchScore
 		}
 	}
-	return bestMove
+	return bestMove, -1 * bestScore
 }
 
 // Calls negamax function on boards using iterative deepening and null window search
@@ -51,7 +45,7 @@ func Solve(b game.Board) int {
 		} else if mid >= 0 && max/2 > mid {
 			mid = max / 2
 		}
-		r := Negamax(b, mid, mid+1)
+		r := Negamax(b, mid, mid+1, 30)
 		if r <= mid {
 			max = r
 		} else {
@@ -69,7 +63,7 @@ func Solve(b game.Board) int {
 // The score is the amount of moves from the last move that a player will win in: 1
 // means that the current player will win in the last move, -5 means they'll lose in
 // the 5th to last move, and 0 is a draw.
-func Negamax(b game.Board, alpha, beta int) int {
+func Negamax(b game.Board, alpha, beta, depth int) int {
 	alphaOrig := alpha
 
 	if b.IsDrawn() {
@@ -83,9 +77,11 @@ func Negamax(b game.Board, alpha, beta int) int {
 		}
 	}
 
-	opening := openingBook.Opening(b.Key())
-	if opening != -30 {
-		return int(opening)
+	if b.NumMoves() == 12 {
+		opening := openingBook.Get_book_value(b)
+		if opening != -300 {
+			return int(opening)
+		}
 	}
 
 	// Check to see if opponent has a move that will cause us to lose next turn
@@ -136,6 +132,11 @@ func Negamax(b game.Board, alpha, beta int) int {
 		moveOrder.Insert(move, score)
 	}
 
+	// if we get to a depth of 0 we return the score (population count) of the best move
+	if depth == 0 {
+		return moveOrder.moves[0].score
+	}
+
 	// Compute score for position and save it into bestScore
 	bestScore := worst
 	for _, move := range moveOrder.moves {
@@ -147,7 +148,7 @@ func Negamax(b game.Board, alpha, beta int) int {
 		// Play move on new board
 		newBoard.Play(move.col)
 		// Compute negamax score for our opponent on new board
-		branchScore := -Negamax(newBoard, -beta, -alpha)
+		branchScore := -Negamax(newBoard, -beta, -alpha, depth-1)
 		// Update best score and alpha if new found score is greater
 		bestScore = max(bestScore, branchScore)
 		alpha = max(alpha, branchScore)
