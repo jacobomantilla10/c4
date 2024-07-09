@@ -148,3 +148,18 @@ func TestHardHard(t *testing.T) {
 	}
 	t.Logf("\nTotal time: %s, Mean time: %s", totalTime.Round(time.Second), (totalTime / 1000).Round(time.Second))
 }
+
+func TestDebug(t *testing.T) {
+	b, _ := game.MakeBoardFromString("34443433555")
+	test := test{
+		name:  "debug",
+		input: b,
+		want:  5,
+	}
+	t.Run(test.name, func(t *testing.T) {
+		ans, _ := GetBestMove(test.input)
+		if ans != test.want {
+			t.Errorf("got %d want %d", ans, test.want)
+		}
+	})
+}

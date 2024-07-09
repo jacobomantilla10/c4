@@ -1,7 +1,6 @@
 package solver
 
 import (
-	"fmt"
 	"io"
 	"math/big"
 	"os"
@@ -16,45 +15,10 @@ type OpeningBook struct {
 	Size     int
 }
 
-// create function to initialize it using the data file
-// func MakeOpeningBook() OpeningBook {
-// 	openings := map[uint64]int8{}
-// 	size := 0
-
-// 	file, err := os.Open("openingbook.data")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	defer file.Close()
-
-// 	scanner := bufio.NewScanner(file)
-// 	for scanner.Scan() {
-// 		line := scanner.Text()
-// 		fields := strings.Fields(line)
-// 		key, _ := strconv.Atoi(fields[0])
-// 		val, _ := strconv.Atoi(fields[1])
-
-// 		openings[uint64(key)] = int8(val)
-// 		size++
-// 	}
-
-// 	return OpeningBook{openings, size}
-// }
-
 func MakeOpeningBook() OpeningBook {
-	book := read_book("bookDeepDist.dat")
+	book := read_book("../solver/bookDeepDist.dat")
 	return OpeningBook{Openings: book, Size: len(book)}
 }
-
-// // Get opening if it exists, return opening with -30 value if it does not.
-// func (o OpeningBook) Opening(key uint64) int8 {
-// 	val, ok := o.Openings[key]
-// 	if !ok {
-// 		// return opening with -30 val to signify it is not valid
-// 		return -30
-// 	}
-// 	return val
-// }
 
 func read_book(filename string) [][]int {
 	// initialize list
@@ -83,7 +47,6 @@ func read_book(filename string) [][]int {
 			break // reached EOF
 		}
 		// create integer from bytes using big byte order and signed number. This is our huffman encoded position
-		//pos := binary.BigEndian.Uint32(buffer1)
 		pos := int(big.NewInt(0).SetBytes(buffer1).Int64())
 		if pos > 0x7FFFFFFF {
 			pos -= (2 << 31)
@@ -93,12 +56,6 @@ func read_book(filename string) [][]int {
 		// create integer from bytes using big byte order and signed number. This is our score
 		score1 := int8(buffer2[0]) // not sure if need to convert here
 
-		if score1 > -70 && score1 < 0 {
-			fmt.Println("Testing")
-		}
-		// TODO change the score to be in the format we use
-		// Player 1 will win after 100-71 = 29 moves (larger score is better)
-		// If Player 2 will win, the score will be negative: -100+(distance to win). smaller score is better.
 		var score int
 		if score1 < 0 {
 			distance_turns := (int(score1) + 100 + 1) / 2
