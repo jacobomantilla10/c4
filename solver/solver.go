@@ -5,8 +5,8 @@ import (
 )
 
 var DefaultMoveOrder = [7]int{3, 2, 4, 1, 5, 0, 6}
-var transpositionTable = TranspositionTable{Table: make([]Transposition, 100000000), Count: 0}
 var openingBook = MakeOpeningBook()
+var transpositionTable = TranspositionTable{Table: make([]Transposition, 10000000), Count: 0}
 
 // Function used by game loop to get the best move in a position. Takes in
 // a board and returns the column corresponding to the best move.
