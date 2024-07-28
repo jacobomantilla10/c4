@@ -1,7 +1,6 @@
 package solver
 
 import (
-	"fmt"
 	"io"
 	"math/big"
 	"os"
@@ -25,64 +24,6 @@ func MakeOpeningBook() OpeningBook {
 	return OpeningBook{Openings: book, Size: len(book)}
 }
 
-func read_book_synchronous(filename string) [][]int {
-	// initialize list
-	book := [][]int{}
-	buffer1Size := 4 // Used for first 3 bytes which give us the position
-	buffer2Size := 1 // Used for last byte which gives us the score
-	// open file
-	file, err := os.Open(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	buffer1 := make([]byte, buffer1Size)
-	buffer2 := make([]byte, buffer2Size)
-
-	// read line and append to list until there are no more entries
-	for {
-		_, err := file.Read(buffer1)
-
-		if err != nil {
-			if err != io.EOF {
-				panic(err)
-			}
-
-			break // reached EOF
-		}
-		// create integer from bytes using big byte order and signed number. This is our huffman encoded position
-		//pos := binary.BigEndian.Uint32(buffer1)
-		pos := int(big.NewInt(0).SetBytes(buffer1).Int64())
-		if pos > 0x7FFFFFFF {
-			pos -= (2 << 31)
-		}
-		// read one more byte into buffer2
-		file.Read(buffer2)
-		// create integer from bytes using big byte order and signed number. This is our score
-		score1 := int8(buffer2[0]) // not sure if need to convert here
-
-		if score1 > -70 && score1 < 0 {
-			fmt.Println("Testing")
-		}
-		// TODO change the score to be in the format we use
-		// Player 1 will win after 100-71 = 29 moves (larger score is better)
-		// If Player 2 will win, the score will be negative: -100+(distance to win). smaller score is better.
-		var score int
-		if score1 < 0 {
-			distance_turns := (int(score1) + 100 + 1) / 2
-			score = (22 - (6 + distance_turns)) * -1
-		} else if score1 > 0 {
-			distance_turns := (100 - int(score1) + 1) / 2
-			score = 22 - (6 + distance_turns)
-		}
-		// append this position to the book
-		book = append(book, []int{pos, score})
-
-	}
-	return book
-}
-
 func read_book(filename string) [][]int {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -94,66 +35,61 @@ func read_book(filename string) [][]int {
 	if err != nil {
 		panic(err)
 	}
-	length := fileInfo.Size()
-	fmt.Println(length)
+	numGoroutines := 56                        // Got this number through trial and error
+	length := int(fileInfo.Size())             // length of file in bytes
+	numItems := length / 5                     // number of items. 5 bytes give us one "opening" containing position and score.
+	chunkSize := (length - 15) / numGoroutines // size of chunks in bytes after we split file up into numGoroutines goroutines
+	//chunkSize := (length) / numGoroutines
+	book := make([][]int, numItems) // book that will hold the openings
 
-	chunkSize := int((length - 5) / 13) // chunk size if we are splitting file up into 100 pieces
-	book := make([][]int, 4200899)
-	// create an array of the size that we will need to hold all of the openings
-	pos, score := read_line(file, 21004490, 0)
+	// We have a file of 21004495 bytes we will read with 56 goroutines, each reading it by chunks of 5 bytes at a time.
+	// To be able to do this we need to read the last 15 bytes, because 21004495-15 is divisible by 56 and then again by 5.
+	pos, score := read_line(file, length-15, 0)
+	book[len(book)-3] = []int{pos, score}
+	pos, score = read_line(file, length-10, 0)
+	book[len(book)-2] = []int{pos, score}
+	pos, score = read_line(file, length-5, 0)
 	book[len(book)-1] = []int{pos, score}
+
 	var wg sync.WaitGroup
-	wg.Add(13)
-	//openings := make(chan [2]int, 4200898)
+	wg.Add(numGoroutines)
 
-	// read the last 5 and remove them
-
-	for i := 0; i < 13; i++ {
+	// Spin off numGoroutines goroutines to read the file by chunks
+	for i := 0; i < numGoroutines; i++ {
 		go func(i, offset int) {
 			defer wg.Done()
 			k := 0
 			for j := 0; j < chunkSize; j += 5 {
 				pos, score := read_line(file, offset, j)
-				// append this position to the book
-				//fmt.Printf("Go routine %d: pos %d, score %d\n", i, pos, score)
-				//openings <- ([2]int{pos, score})
-				book[(i*chunkSize/5)+k] = []int{pos, score}
+				idx := (i * (chunkSize / 5)) + k
+				book[idx] = []int{pos, score}
 				k++
 			}
 		}(i, (i * chunkSize))
 	}
 	wg.Wait()
-	//close(openings)
-
-	// for elem := range openings {
-	// 	book = append(book, elem[:])
-	// }
-	// book = append(book, last[:])
-
-	// sort.Slice(book, func(i, j int) bool {
-	// 	return book[i][0] < book[j][0]
-	// })
 	return book
 }
 
 func read_line(file *os.File, offset, j int) (int, int) {
-	buffer1 := make([]byte, 4) // first four bytes give us the position
-	buffer2 := make([]byte, 1) // last byte gives us the score of the position
-	_, err := file.ReadAt(buffer1, int64(offset+j))
+	posBuf := make([]byte, 4)   // first four bytes give us the position
+	scoreBuf := make([]byte, 1) // last byte gives us the score of the position
 
+	// Read 4 bytes from file. These give us our position in the Huffman encoded format.
+	_, err := file.ReadAt(posBuf, int64(offset+j))
 	if err != nil && err != io.EOF {
 		panic(err)
 	}
-	// create integer from bytes using big byte order and signed number. This is our huffman encoded position
-	pos := int(big.NewInt(0).SetBytes(buffer1).Int64())
+	pos := int(big.NewInt(0).SetBytes(posBuf).Int64())
+	// Check for overflow and correct. TODO is this correct?
 	if pos > 0x7FFFFFFF {
 		pos -= (2 << 31)
 	}
-	// read one more byte into buffer2
-	file.ReadAt(buffer2, int64(offset+j+4))
-	// create integer from bytes using big byte order and signed number. This is our score
-	score1 := int8(buffer2[0]) // not sure if need to convert here
+	// read one more byte into buffer2, this represents the score.
+	file.ReadAt(scoreBuf, int64(offset+j+4))
+	score1 := int8(scoreBuf[0])
 
+	// Convert score from db format into format used by engine. TODO add more here about formats.
 	var score int
 	if score1 < 0 {
 		distance_turns := (int(score1) + 100 + 1) / 2
