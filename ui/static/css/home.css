@@ -1,0 +1,40 @@
+.board {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  /*   flex-wrap: nowrap; */
+}
+
+.square {
+  background-color: blue;
+  width: 40px;
+  height: 40px;
+  border-right: solid;
+  border-bottom: solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
+.Player1 {
+  background-color: red;
+}
+
+.Player2 {
+  background-color: yellow;
+}
+
+.Empty {
+  background-color: white;
+}

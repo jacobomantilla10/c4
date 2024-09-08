@@ -1,7 +1,7 @@
 package solver
 
 import (
-	"github.com/jacobomantilla10/connect-four/game"
+	"github.com/jacobomantilla10/c4/internal/game"
 )
 
 var DefaultMoveOrder = [7]int{3, 2, 4, 1, 5, 0, 6}

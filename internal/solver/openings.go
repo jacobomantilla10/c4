@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/jacobomantilla10/connect-four/game"
+	"github.com/jacobomantilla10/c4/internal/game"
 )
 
 // create openingBook which is the same type as transposition
@@ -17,7 +17,7 @@ type OpeningBook struct {
 }
 
 func MakeOpeningBook() OpeningBook {
-	filename := "../solver/bookDeepDist.dat"
+	filename := "../../internal/solver/bookDeepDist.dat"
 
 	book := read_book(filename)
 	//book := read_book(filename)

@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/jacobomantilla10/connect-four/game"
-	"github.com/jacobomantilla10/connect-four/solver"
+	"github.com/jacobomantilla10/c4/internal/game"
+	"github.com/jacobomantilla10/c4/internal/solver"
 )
 
 func main() {

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jacobomantilla10/connect-four/game"
+	"github.com/jacobomantilla10/c4/internal/game"
 )
 
 type test struct {
