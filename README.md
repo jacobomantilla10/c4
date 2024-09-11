@@ -2,7 +2,7 @@
 ## Connect Four 
 Golang program that runs a simple game of Connect Four on the command line where player 1 (human) plays against a connect four solver also written in Go.
 ## The Solver
-The solver uses the MiniMax algorithm with alpha beta pruning, optimized move order, a transposition, and an opening database.
+The solver uses the MiniMax algorithm with alpha beta pruning, optimized move order, a transposition table, and an opening database.
 ## How to Run the program
 There are two ways to run the app right now, CLI and Web.
 
