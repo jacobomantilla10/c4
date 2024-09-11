@@ -12,5 +12,5 @@ go run .
 ```
 For the CLI: navigate to ./cmd/cli/ and run the same command.
 ## Where to Next
-Right now I'm focused on polishing up the Web application so that I can release this project. In the future I'd also like to rethink/refactor some details in
+Right now I'm focused on polishing up the Web application and making it production-ready so that I can release this project. In the future I'd also like to rethink/refactor some details in
 the implementation of the engine.
