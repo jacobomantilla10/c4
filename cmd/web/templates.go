@@ -6,6 +6,7 @@ type templateData struct {
 	BoardString string
 	Board       [7][6]string
 	IsGameOver  bool
+	Outcome     string
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {
@@ -25,4 +26,13 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	templateCache["board"] = tpl
 
 	return templateCache, nil
+}
+
+func newTemplateData() templateData {
+	return templateData{
+		BoardString: "",
+		Board:       emptyBoard(),
+		IsGameOver:  false,
+		Outcome:     "Game will end in a draw",
+	}
 }

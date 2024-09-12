@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func emptyBoard() [7][6]string {
 	return [7][6]string{
 		{"Empty", "Empty", "Empty", "Empty", "Empty", "Empty"},
@@ -32,10 +34,24 @@ func boardFromString(arr [7][6]string, board string) [7][6]string {
 	return arr
 }
 
-func newTemplateData() templateData {
-	return templateData{
-		BoardString: "",
-		Board:       emptyBoard(),
-		IsGameOver:  false,
+func formatOutcome(score, numMoves int) string {
+	var winner string
+	var victoryMove int
+	if score < 0 {
+		winner = "Red"
+		victoryMove = 22 + score
+	} else {
+		winner = "Yellow"
+		victoryMove = 22 - score
 	}
+	movesByPlayer := (numMoves + 1) / 2
+	numMovesToVictory := victoryMove - movesByPlayer
+
+	var outcome string
+	if numMovesToVictory == 1 {
+		outcome = fmt.Sprintf("%s wins in %d move", winner, numMovesToVictory)
+	} else {
+		outcome = fmt.Sprintf("%s wins in %d moves", winner, numMovesToVictory)
+	}
+	return outcome
 }

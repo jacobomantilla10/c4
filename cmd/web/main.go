@@ -16,7 +16,7 @@ func main() {
 	templateCache, err := newTemplateCache()
 	if err != nil {
 		// TODO clean up error handling
-		fmt.Errorf("Creating template cache %e", err)
+		panic(err)
 	}
 	app := &application{templateCache: templateCache}
 	routes := app.routes(mux)

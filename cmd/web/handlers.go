@@ -34,10 +34,13 @@ func (app *application) restart(w http.ResponseWriter, r *http.Request) {
 func (app *application) getNextMove(w http.ResponseWriter, r *http.Request) {
 	board := r.URL.Query().Get("Board")
 	move := r.URL.Query().Get("Move")
-
 	board += move
 
 	tpl := app.templateCache["board"]
+	// If we are not dealing with HTMX request, we need to return the whole page HTML
+	if r.Header.Get("Hx-Request") != "true" {
+		tpl = app.templateCache["home"]
+	}
 
 	fmt.Println("Board: ", board)
 	fmt.Println("Move: ", move)
@@ -48,14 +51,16 @@ func (app *application) getNextMove(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	insertCol, _ := solver.GetBestMove(b)
+
+	insertCol, score := solver.GetBestMove(b)
 	board += strconv.Itoa(insertCol + 1)
 	boardArr := boardFromString(emptyBoard(), board)
 
 	data := newTemplateData()
 	data.Board = boardArr
 	data.BoardString = board
-	data.IsGameOver = b.IsWinningMove(insertCol)
+	data.IsGameOver = b.IsWinningMove(insertCol) || b.IsDrawn()
+	data.Outcome = formatOutcome(score, b.NumMoves())
 
 	err = tpl.Execute(w, data)
 	if err != nil {

@@ -1,11 +1,12 @@
 {{block "board" .}}
 <div class="board">
   <div
-    class="col"
+    class="col {{if .IsGameOver}}disabled{{end}}"
     hx-get="/game/"
     hx-target=".game"
     hx-vals='{"Board": "{{.BoardString}}", "Move": "1"}'
     hx-push-url="true"
+    hx-trigger="click[!this.classList.contains('disabled')]"
   >
     <div class="square">
       <div class="circle {{ index (index .Board 0) 5}}"></div>
@@ -27,11 +28,12 @@
     </div>
   </div>
   <div
-    class="col"
+    class="col {{if .IsGameOver}}disabled{{end}}"
     hx-get="/game/"
     hx-target=".game"
     hx-vals='{"Board": "{{.BoardString}}", "Move": "2"}'
     hx-push-url="true"
+    hx-trigger="click[!this.classList.contains('disabled')]"
   >
     <div class="square">
       <div class="circle {{ index (index .Board 1) 5}}"></div>
@@ -53,11 +55,12 @@
     </div>
   </div>
   <div
-    class="col"
+    class="col {{if .IsGameOver}}disabled{{end}}"
     hx-get="/game/"
     hx-target=".game"
     hx-vals='{"Board": "{{.BoardString}}", "Move": "3"}'
     hx-push-url="true"
+    hx-trigger="click[!this.classList.contains('disabled')]"
   >
     <div class="square">
       <div class="circle {{ index (index .Board 2) 5}}"></div>
@@ -79,11 +82,12 @@
     </div>
   </div>
   <div
-    class="col"
+    class="col {{if .IsGameOver}}disabled{{end}}"
     hx-get="/game/"
     hx-target=".game"
     hx-vals='{"Board": "{{.BoardString}}", "Move": "4"}'
     hx-push-url="true"
+    hx-trigger="click[!this.classList.contains('disabled')]"
   >
     <div class="square">
       <div class="circle {{ index (index .Board 3) 5}}"></div>
@@ -105,11 +109,12 @@
     </div>
   </div>
   <div
-    class="col"
+    class="col {{if .IsGameOver}}disabled{{end}}"
     hx-get="/game/"
     hx-target=".game"
     hx-vals='{"Board": "{{.BoardString}}", "Move": "5"}'
     hx-push-url="true"
+    hx-trigger="click[!this.classList.contains('disabled')]"
   >
     <div class="square">
       <div class="circle {{ index (index .Board 4) 5}}"></div>
@@ -131,11 +136,12 @@
     </div>
   </div>
   <div
-    class="col"
+    class="col {{if .IsGameOver}}disabled{{end}}"
     hx-get="/game/"
     hx-target=".game"
     hx-vals='{"Board": "{{.BoardString}}", "Move": "6"}'
     hx-push-url="true"
+    hx-trigger="click[!this.classList.contains('disabled')]"
   >
     <div class="square">
       <div class="circle {{ index (index .Board 5) 5}}"></div>
@@ -157,11 +163,12 @@
     </div>
   </div>
   <div
-    class="col"
+    class="col {{if .IsGameOver}}disabled{{end}}"
     hx-get="/game/"
     hx-target=".game"
     hx-vals='{"Board": "{{.BoardString}}", "Move": "7"}'
     hx-push-url="true"
+    hx-trigger="click[!this.classList.contains('disabled')]"
   >
     <div class="square">
       <div class="circle {{ index (index .Board 6) 5}}"></div>
@@ -183,7 +190,8 @@
     </div>
   </div>
 </div>
-{{if .IsGameOver}}
-<div>Game Over!</div>
-<div class="restart" hx-post="/restart" hx-target=".game">Restart</div>
-{{end}} {{end}}
+<div class="outcome">
+  {{if not .IsGameOver}} {{ .Outcome }} {{else}} Game Over! {{end}}
+</div>
+<button class="restart" type="button" hx-post="/restart" hx-target=".game">New Game</div>
+{{end}}
