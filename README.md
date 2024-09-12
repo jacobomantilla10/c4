@@ -1,14 +1,16 @@
 # My Connect Four Solver
 ## Connect Four 
-Golang program that runs a simple game of Connect Four on the command line where player 1 (human) plays against a connect four solver also written in Go.
+Golang program that runs a simple game of Connect Four on the command line where player 1 (human) plays against a connect four solver.
 ## The Solver
-The solver uses the MiniMax algorithm with alpha beta pruning, as well as an optimized move order in order to speed up the algorithm. 
+The solver uses the MiniMax algorithm with alpha beta pruning, optimized move order, a transposition table, and an opening database.
 ## How to Run the program
-The file that runs the CLI game is main/main.go. Simply open up the code in your terminal, navigate to the main/ directory and run (make sure you have go installed)
+There are two ways to run the app right now, CLI and Web.
+
+For web: navigate to ./cmd/web/ and run
 ```
-go run main.go
+go run .
 ```
+For the CLI: navigate to ./cmd/cli/ and run the same command.
 ## Where to Next
-I'm going to keep updating this project to make it run as fast as possible--I want to add transposition tables, use the bitboard approach, add go routines to run the MiniMax for
-each of the 7 possible insert columns, among other things to keep making the solver as accurate as possible. I'm also interested in (possibly) eventually creating a simple front
-end for it and having the user be able to play the AI, be able to build a position and evaluate it, have the AI play itself, etc.
+Right now I'm focused on polishing up the Web application and making it production-ready so that I can release this project. In the future I'd also like to rethink/refactor some details in
+the implementation of the engine.
