@@ -1,0 +1,189 @@
+{{block "board" .}}
+<div class="board">
+  <div
+    class="col"
+    hx-get="/game/"
+    hx-target=".game"
+    hx-vals='{"Board": "{{.BoardString}}", "Move": "1"}'
+    hx-push-url="true"
+  >
+    <div class="square">
+      <div class="circle {{ index (index .Board 0) 5}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 0) 4}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 0) 3}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 0) 2}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 0) 1}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 0) 0}}"></div>
+    </div>
+  </div>
+  <div
+    class="col"
+    hx-get="/game/"
+    hx-target=".game"
+    hx-vals='{"Board": "{{.BoardString}}", "Move": "2"}'
+    hx-push-url="true"
+  >
+    <div class="square">
+      <div class="circle {{ index (index .Board 1) 5}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 1) 4}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 1) 3}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 1) 2}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 1) 1}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 1) 0}}"></div>
+    </div>
+  </div>
+  <div
+    class="col"
+    hx-get="/game/"
+    hx-target=".game"
+    hx-vals='{"Board": "{{.BoardString}}", "Move": "3"}'
+    hx-push-url="true"
+  >
+    <div class="square">
+      <div class="circle {{ index (index .Board 2) 5}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 2) 4}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 2) 3}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 2) 2}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 2) 1}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 2) 0}}"></div>
+    </div>
+  </div>
+  <div
+    class="col"
+    hx-get="/game/"
+    hx-target=".game"
+    hx-vals='{"Board": "{{.BoardString}}", "Move": "4"}'
+    hx-push-url="true"
+  >
+    <div class="square">
+      <div class="circle {{ index (index .Board 3) 5}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 3) 4}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 3) 3}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 3) 2}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 3) 1}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 3) 0}}"></div>
+    </div>
+  </div>
+  <div
+    class="col"
+    hx-get="/game/"
+    hx-target=".game"
+    hx-vals='{"Board": "{{.BoardString}}", "Move": "5"}'
+    hx-push-url="true"
+  >
+    <div class="square">
+      <div class="circle {{ index (index .Board 4) 5}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 4) 4}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 4) 3}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 4) 2}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 4) 1}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 4) 0}}"></div>
+    </div>
+  </div>
+  <div
+    class="col"
+    hx-get="/game/"
+    hx-target=".game"
+    hx-vals='{"Board": "{{.BoardString}}", "Move": "6"}'
+    hx-push-url="true"
+  >
+    <div class="square">
+      <div class="circle {{ index (index .Board 5) 5}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 5) 4}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 5) 3}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 5) 2}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 5) 1}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 5) 0}}"></div>
+    </div>
+  </div>
+  <div
+    class="col"
+    hx-get="/game/"
+    hx-target=".game"
+    hx-vals='{"Board": "{{.BoardString}}", "Move": "7"}'
+    hx-push-url="true"
+  >
+    <div class="square">
+      <div class="circle {{ index (index .Board 6) 5}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 6) 4}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 6) 3}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 6) 2}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 6) 1}}"></div>
+    </div>
+    <div class="square">
+      <div class="circle {{ index (index .Board 6) 0}}"></div>
+    </div>
+  </div>
+</div>
+{{if .IsGameOver}}
+<div>Game Over!</div>
+<div class="restart" hx-post="/restart" hx-target=".game">Restart</div>
+{{end}} {{end}}

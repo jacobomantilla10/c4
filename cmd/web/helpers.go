@@ -31,3 +31,11 @@ func boardFromString(arr [7][6]string, board string) [7][6]string {
 	}
 	return arr
 }
+
+func newTemplateData() templateData {
+	return templateData{
+		BoardString: "",
+		Board:       emptyBoard(),
+		IsGameOver:  false,
+	}
+}

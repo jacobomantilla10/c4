@@ -4,47 +4,61 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"text/template"
 
 	"github.com/jacobomantilla10/c4/internal/game"
 	"github.com/jacobomantilla10/c4/internal/solver"
 )
 
-func home(w http.ResponseWriter, r *http.Request) {
-	tpl, err := template.ParseFiles("../../ui/html/home.gohtml")
+func (app *application) home(w http.ResponseWriter, r *http.Request) {
+	tpl := app.templateCache["home"]
+
+	data := newTemplateData()
+
+	err := tpl.Execute(w, data)
 	if err != nil {
 		panic(err)
 	}
-	boardArr := emptyBoard()
-	tpl.Execute(w, TplData{BoardString: "", Board: boardArr})
 }
 
-type TplData struct {
-	BoardString string
-	Board       [7][6]string
+func (app *application) restart(w http.ResponseWriter, r *http.Request) {
+	tpl := app.templateCache["board"]
+
+	data := newTemplateData()
+
+	err := tpl.Execute(w, data)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func homePost(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	col := r.FormValue("Column")
-	board := r.FormValue("Board")
-	r.Body.Close()
+func (app *application) getNextMove(w http.ResponseWriter, r *http.Request) {
+	board := r.URL.Query().Get("Board")
+	move := r.URL.Query().Get("Move")
 
-	board += col
+	board += move
+
+	tpl := app.templateCache["board"]
 
 	fmt.Println("Board: ", board)
+	fmt.Println("Move: ", move)
 
 	// use engine to calculate best move given board string and save the result
 	// in new variable which you append to board
-	b, _ := game.MakeBoardFromString(board)
-	insertCol, _ := solver.GetBestMove(b)
-	board += strconv.Itoa(insertCol + 1)
-
-	boardArr := boardFromString(emptyBoard(), board)
-
-	tpl, err := template.ParseFiles("../../ui/html/home.gohtml")
+	b, err := game.MakeBoardFromString(board)
 	if err != nil {
 		panic(err)
 	}
-	tpl.Execute(w, TplData{BoardString: board, Board: boardArr})
+	insertCol, _ := solver.GetBestMove(b)
+	board += strconv.Itoa(insertCol + 1)
+	boardArr := boardFromString(emptyBoard(), board)
+
+	data := newTemplateData()
+	data.Board = boardArr
+	data.BoardString = board
+	data.IsGameOver = b.IsWinningMove(insertCol)
+
+	err = tpl.Execute(w, data)
+	if err != nil {
+		panic(err)
+	}
 }
